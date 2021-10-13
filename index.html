@@ -197,6 +197,15 @@
             });
         }
 
+        window.addEventListener("paste", function (evt) {
+            evt.preventDefault();
+            let paste = (evt.clipboardData || window.clipboardData).getData('text');
+
+            for (var char of paste) {
+                handle_char(char);
+            }
+        })
+
         window.addEventListener("keydown", function (evt) {
             if (evt.isComposing || evt.keyCode === 229) {
                 return;
