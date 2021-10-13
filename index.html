@@ -17,7 +17,8 @@
         </div>
         <div class="content">
             <h1>Hi, I'm Q!</h1>
-            <p>Welcome to my website. You can navigate around and learn about me using the terminal below.</p>
+            <p>Welcome to my website. You can navigate around and learn about me using the terminal below. Try `help` to
+                get started.</p>
             <blockquote>
                 Codes are a puzzle. A game, just like any other game.<br/>
                 <em>- Alan Turing</em>
@@ -29,15 +30,14 @@
                 If you're on mobile here are some links to simulate text input;
             </p>
             <ul>
-                <li><a href="#" class="text-link" data-text="ls" tabindex="-1">ls</a></li>
                 <li><a href="#" class="text-link" data-text="cat about" tabindex="-1">cat about</a></li>
                 <li><a href="#" class="text-link" data-text="cat email" tabindex="-1">cat email</a></li>
-                <li><a href="#" class="text-link" data-text="cat github" tabindex="-1">cat github</a></li>
-                <li><a href="#" class="text-link" data-text="cat github-sponsors" tabindex="-1">cat github-sponsors</a>
-                </li>
-                <li><a href="#" class="text-link" data-text="cat twitter" tabindex="-1">cat twitter</a></li>
                 <li><a href="#" class="text-link" data-text="cat irc" tabindex="-1">cat irc</a></li>
                 <li><a href="#" class="text-link" data-text="cat xmpp" tabindex="-1">cat xmpp</a></li>
+                <li><a href="#" class="text-link" data-text="cd github" tabindex="-1">cd github</a></li>
+                <li><a href="#" class="text-link" data-text="cd github-sponsors" tabindex="-1">cd github-sponsors</a>
+                </li>
+                <li><a href="#" class="text-link" data-text="cd twitter" tabindex="-1">cd twitter</a></li>
             </ul>
             <pre id="term-contents"></pre>
         </div>
@@ -52,6 +52,106 @@
 
 <script type="application/javascript">
     window.addEventListener("load", start);
+
+    function cowsay_say(text) {
+        var cow = "\r\n        \\   ^__^\r\n         \\  (oo)\\_______\r\n            (__)\\       )\\/\\\r\n                ||----w |\r\n                ||     ||";
+        return cowsay_ballon_say(text, 20) + cow;
+    }
+
+    function cowsay_ballon_say(text, wrap) {
+        var delimiters = {
+            first: ["/", "\\"],
+            middle: ["|", "|"],
+            last: ["\\", "/"],
+            only: ["<", ">"]
+        };
+
+        return cowsay_format(text, wrap, delimiters);
+    }
+
+    function cowsay_format(text, wrap, delimiters) {
+        var lines = cowsay_split(text, wrap);
+        var maxLength = cowsay_max(lines);
+
+        var balloon;
+        if (lines.length === 1) {
+            balloon = [
+                " " + cowsay_top(maxLength),
+                delimiters.only[0] + " " + lines[0] + " " + delimiters.only[1],
+                " " + cowsay_bottom(maxLength)
+            ];
+        } else {
+            balloon = [" " + cowsay_top(maxLength)];
+
+            for (var i = 0, len = lines.length; i < len; i += 1) {
+                var delimiter;
+
+                if (i === 0) {
+                    delimiter = delimiters.first;
+                } else if (i === len - 1) {
+                    delimiter = delimiters.last;
+                } else {
+                    delimiter = delimiters.middle;
+                }
+
+                balloon.push(delimiter[0] + " " + cowsay_pad(lines[i], maxLength) + " " + delimiter[1]);
+            }
+
+            balloon.push(" " + cowsay_bottom(maxLength));
+        }
+
+        return balloon.join("\n");
+    }
+
+    function cowsay_split(text, wrap) {
+        text = text.replace(/\r\n?|[\n\u2028\u2029]/g, "\n").replace(/^\uFEFF/, '');
+
+        var lines = [];
+        if (!wrap) {
+            lines = text.split("\n");
+        } else {
+            var start = 0;
+            while (start < text.length) {
+                var nextNewLine = text.indexOf("\n", start);
+
+                var wrapAt = Math.min(start + wrap, nextNewLine === -1 ? text.length : nextNewLine);
+
+                lines.push(text.substring(start, wrapAt));
+                start = wrapAt;
+
+                if (text.charAt(start) === "\n") {
+                    start += 1;
+                }
+            }
+        }
+
+        return lines;
+    }
+
+    function cowsay_max(lines) {
+        var max = 0;
+        for (var i = 0, len = lines.length; i < len; i += 1) {
+            if (lines[i].length > max) {
+                max = lines[i].length;
+            }
+        }
+
+        return max;
+    }
+
+
+    function cowsay_pad(text, length) {
+        return text + (new Array(length - text.length + 1)).join(" ");
+    }
+
+    function cowsay_top(length) {
+        return new Array(length + 3).join("_");
+    }
+
+    function cowsay_bottom(length) {
+        return new Array(length + 3).join("-");
+    }
+
 
     function start() {
         var term = document.getElementById("term-contents");
@@ -127,15 +227,21 @@
             var out = [];
             var cmd_parts = [...cmd.matchAll(/((?:[^ \\]*\\.)+[^ ]*)|"([^"]+)"|'([^']+)'|([^ ]+)/g)];
             for (var part of cmd_parts) {
+                var processed_part;
                 if (typeof part[1] !== "undefined") {
-                    out.push(part[1].replace(/(^|[^\\])\\(?!\\)/g, "$1").replace("\\\\", "\\"));
+                    processed_part = part[1].replace(/(^|[^\\])\\ (?!\\)/g, "$1 ").replace("\\\\", "\\");
                 } else if (typeof part[2] !== "undefined") {
-                    out.push(part[2].replace(/^"(.*)"$/g, "$1"));
+                    processed_part = part[2].replace(/^"(.*)"$/g, "$1");
                 } else if (typeof part[3] !== "undefined") {
-                    out.push(part[3].replace(/^'(.*)'$/g, "$1"));
+                    processed_part = part[3].replace(/^'(.*)'$/g, "$1");
                 } else if (typeof part[4] !== "undefined") {
-                    out.push(part[4]);
+                    processed_part = part[4];
                 }
+                out.push(
+                    processed_part
+                        .replace(/(^|[^\\])\\n(?!\\)/g, "$1\n")
+                        .replace(/(^|[^\\])\\t(?!\\)/g, "$1\t")
+                )
             }
             return out
         }
@@ -153,9 +259,25 @@
                 "cmd": cmd_help,
                 "complete": null,
             },
+            "echo": {
+                "cmd": cmd_echo,
+                "complete": null,
+            },
+            "cowsay": {
+                "cmd": cmd_cowsay,
+                "complete": null,
+            },
+            "lolcat": {
+                "cmd": cmd_lolcat,
+                "complete": null,
+            },
             "cat": {
                 "cmd": cmd_cat,
                 "complete": complete_cat,
+            },
+            "cd": {
+                "cmd": cmd_cd,
+                "complete": complete_cd,
             },
         };
 
@@ -165,28 +287,54 @@
                 cmd_parts.push("");
             }
             if (cmd_parts.length === 1) {
-                tab_complete_from_list(cmd_parts[0], Object.keys(COMMANDS));
+                tab_complete_from_list(cmd_parts[0], Object.keys(COMMANDS), cmd);
             } else {
                 if (COMMANDS[cmd_parts[0]] && COMMANDS[cmd_parts[0]]["complete"]) {
                     var complete = COMMANDS[cmd_parts[0]]["complete"](cmd_parts.slice(1));
                     if (complete) {
-                        tab_complete_from_list(cmd_parts[cmd_parts.length - 1], complete);
+                        tab_complete_from_list(cmd_parts[cmd_parts.length - 1], complete, cmd);
                     }
                 }
             }
         }
 
-        function tab_complete_from_list(cmd_part, options) {
+        function tab_complete_from_list(cmd_part, options, cmd) {
+            var similar_matches = options.filter(function (k) {
+                return k.startsWith(cmd_part);
+            });
             for (var key of options) {
-                if (key.startsWith(cmd_part) && cmd_part !== key) {
-                    var match_count = options.filter(function (k) {
-                        return k.startsWith(key);
-                    }).length;
-                    for (var char of key.substring(cmd_part.length)) {
-                        handle_char(char);
-                    }
-                    if (match_count === 1) {
+                if (key.startsWith(cmd_part) && (cmd_part !== key || similar_matches.length === 1)) {
+                    if (similar_matches.length === 1) {
+                        for (var char of key.substring(cmd_part.length)) {
+                            handle_char(char);
+                        }
                         handle_char(" ");
+                    } else {
+                        var orig_len = similar_matches.length;
+                        var similar_match = cmd_part;
+                        var i = cmd_part.length;
+                        while (true) {
+                            console.log(similar_match);
+                            if (!key[i]) {
+                                break;
+                            }
+                            similar_match += key[i];
+                            var new_similar_matches = options.filter(function (k) {
+                                return k.startsWith(similar_match);
+                            });
+                            if (new_similar_matches.length !== orig_len) {
+                                similar_match = similar_match.substring(0, similar_match.length - 1);
+                                break;
+                            }
+                            i += 1;
+                        }
+                        print_output("\nOptions:\n" + similar_matches.join("\t") + "\n> ");
+                        for (var char of cmd) {
+                            print_output(char);
+                        }
+                        for (var char of similar_match.substring(cmd_part.length)) {
+                            handle_char(char);
+                        }
                     }
                     return;
                 }
@@ -215,7 +363,31 @@
         }
 
         function cmd_help() {
-            print_output("Available commands: help ls pwd cat\n");
+            print_output("Available commands: help echo ls pwd cat cd cowsay lolcat\n");
+        }
+
+        function cmd_echo(args) {
+            print_output(args.join(" ") + "\n");
+        }
+
+        function cmd_lolcat(args) {
+            if (args.length === 0) {
+                print_output("Usage: lolcat [message]\n");
+                return;
+            }
+            var span = document.createElement("span");
+            span.className = "loltext";
+            span.innerText = args.join(" ");
+            output_html(span);
+            print_output("\n");
+        }
+
+        function cmd_cowsay(args) {
+            if (args.length === 0) {
+                print_output("Usage: cowsay [message]\n");
+                return;
+            }
+            print_output(cowsay_say(args.join(" ")) + "\n");
         }
 
         var FILES = {};
@@ -322,6 +494,33 @@
 
         function complete_cat() {
             return Object.keys(FILES);
+        }
+
+        var LINKS = {
+            "github": "https://github.com/TheEnbyperor",
+            "github-sponsors": "https://github.com/sponsors/TheEnbyperor",
+            "twitter": "https://twitter.com/TheEnbyperor",
+        }
+
+        function cmd_cd(args) {
+            if (args.length !== 1) {
+                print_output("Usage: cd [dir]\n");
+            } else {
+                if (LINKS[args[0]]) {
+                    print_output("Navigating to " + LINKS[args[0]] + "\n");
+                    window.location = LINKS[args[0]];
+                } else {
+                    print_output("cd: No such directory\n");
+                }
+            }
+        }
+
+        function complete_cd(args) {
+            if (args.length < 2) {
+                return Object.keys(LINKS);
+            } else {
+                return [];
+            }
         }
     }
 </script>

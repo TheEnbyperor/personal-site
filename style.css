@@ -128,3 +128,9 @@ h1, h2, h3, h4, h5, h6 {
         visibility: hidden;
     }
 }
+
+.loltext {
+    background: linear-gradient(315deg, violet, indigo, blue, green, yellow, orange, red);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
