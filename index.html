@@ -144,6 +144,8 @@
                 output_html(link);
             } else if (cmd_parts[0] === "ls") {
                 print_output("about email github github-sponsors twitter irc xmpp\n")
+            } else if (cmd_parts[0] === "help") {
+                print_output("Available commands: help ls pwd cat\n")
             } else if (cmd_parts[0] === "cat") {
                 if (cmd_parts[1] === "email") {
                     var link = document.createElement("a");
