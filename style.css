@@ -13,6 +13,9 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
+    box-sizing: border-box;
+    margin-bottom: env(safe-area-inset-bottom);
+    margin-top: env(safe-area-inset-top);
 }
 
 footer {
@@ -44,6 +47,8 @@ footer {
     flex-direction: column;
     box-shadow: #212121 0 0 10px;
     overflow: hidden;
+    margin-left: max(12px, env(safe-area-inset-left));
+    margin-right: max(12px, env(safe-area-inset-right));
 }
 
 #term .term-head {
