@@ -1,11 +1,11 @@
 body {
     background: #ab47bc linear-gradient(
             45deg,
-            rgba(91, 206, 250, 0.4),
-            rgba(245, 169, 184, 0.4),
-            rgba(255, 255, 255, 0.4),
-            rgba(245, 169, 184, 0.4),
-            rgba(91, 206, 250, 0.4)
+            rgba(91, 206, 250, 0.5),
+            rgba(245, 169, 184, 0.5),
+            rgba(255, 255, 255, 0.5),
+            rgba(245, 169, 184, 0.5),
+            rgba(91, 206, 250, 0.5)
     );
     display: flex;
     flex-direction: column;

@@ -33,7 +33,8 @@
                 <li><a href="#" class="text-link" data-text="cat about" tabindex="-1">cat about</a></li>
                 <li><a href="#" class="text-link" data-text="cat email" tabindex="-1">cat email</a></li>
                 <li><a href="#" class="text-link" data-text="cat github" tabindex="-1">cat github</a></li>
-                <li><a href="#" class="text-link" data-text="cat github-sponsors" tabindex="-1">cat github-sponsors</a></li>
+                <li><a href="#" class="text-link" data-text="cat github-sponsors" tabindex="-1">cat github-sponsors</a>
+                </li>
                 <li><a href="#" class="text-link" data-text="cat twitter" tabindex="-1">cat twitter</a></li>
                 <li><a href="#" class="text-link" data-text="cat irc" tabindex="-1">cat irc</a></li>
                 <li><a href="#" class="text-link" data-text="cat xmpp" tabindex="-1">cat xmpp</a></li>
@@ -64,7 +65,6 @@
         var cmd_buffer = "";
 
         function handle_enter() {
-            console.log(cmd_buffer);
             output_html(document.createElement("br"));
             if (cmd_buffer.length !== 0) {
                 handle_cmd(cmd_buffer);
@@ -106,12 +106,18 @@
             if (evt.key.length === 1) {
                 if (evt.altKey === false && evt.ctrlKey === false && evt.metaKey === false) {
                     handle_char(evt.key);
+                } else if (evt.altKey === false && evt.ctrlKey === true && evt.metaKey === false && evt.key === "c") {
+                    print_output("^C\n> ");
+                    cmd_buffer = "";
                 }
             } else if (evt.key === "Backspace") {
                 if (cmd_buffer.length !== 0) {
                     cmd_buffer = cmd_buffer.slice(0, -1);
                     term.removeChild(cursor.previousSibling);
                 }
+            } else if (evt.key === "Tab") {
+                tab_complete(cmd_buffer);
+                evt.preventDefault();
             } else if (evt.key === "Enter") {
                 handle_enter()
             }
@@ -134,113 +140,188 @@
             return out
         }
 
+        var COMMANDS = {
+            "pwd": {
+                "cmd": cmd_pwd,
+                "complete": null,
+            },
+            "ls": {
+                "cmd": cmd_ls,
+                "complete": null,
+            },
+            "help": {
+                "cmd": cmd_help,
+                "complete": null,
+            },
+            "cat": {
+                "cmd": cmd_cat,
+                "complete": complete_cat,
+            },
+        };
+
+        function tab_complete(cmd) {
+            var cmd_parts = split_cmd(cmd);
+            if (cmd.substr(cmd.length - 1) === " ") {
+                cmd_parts.push("");
+            }
+            if (cmd_parts.length === 1) {
+                tab_complete_from_list(cmd_parts[0], Object.keys(COMMANDS));
+            } else {
+                if (COMMANDS[cmd_parts[0]] && COMMANDS[cmd_parts[0]]["complete"]) {
+                    var complete = COMMANDS[cmd_parts[0]]["complete"](cmd_parts.slice(1));
+                    if (complete) {
+                        tab_complete_from_list(cmd_parts[cmd_parts.length - 1], complete);
+                    }
+                }
+            }
+        }
+
+        function tab_complete_from_list(cmd_part, options) {
+            for (var key of options) {
+                if (key.startsWith(cmd_part) && cmd_part !== key) {
+                    var match_count = options.filter(function (k) {
+                        return k.startsWith(key);
+                    }).length;
+                    for (var char of key.substring(cmd_part.length)) {
+                        handle_char(char);
+                    }
+                    if (match_count === 1) {
+                        handle_char(" ");
+                    }
+                    return;
+                }
+            }
+        }
+
         function handle_cmd(cmd) {
             var cmd_parts = split_cmd(cmd);
-            if (cmd_parts[0] === "pwd") {
-                var link = document.createElement("a");
-                link.innerText = "https://magicalcodewit.ch\n";
-                link.href = "https://magicalcodewit.ch";
-                link.tabIndex = -1;
-                output_html(link);
-            } else if (cmd_parts[0] === "ls") {
-                print_output("about email github github-sponsors twitter irc xmpp\n")
-            } else if (cmd_parts[0] === "help") {
-                print_output("Available commands: help ls pwd cat\n")
-            } else if (cmd_parts[0] === "cat") {
-                if (cmd_parts[1] === "email") {
-                    var link = document.createElement("a");
-                    link.innerText = "q@magicalcodewit.ch\n";
-                    link.href = "mailto:q@magicalcodewit.ch";
-                    link.target = "_blank";
-                    link.tabIndex = -1;
-                    output_html(link);
-                } else if (cmd_parts[1] === "github") {
-                    var link = document.createElement("a");
-                    link.innerText = "github.com/TheEnbyperor\n";
-                    link.href = "https://github.com/TheEnbyperor";
-                    link.target = "_blank";
-                    link.tabIndex = -1;
-                    output_html(link);
-                } else if (cmd_parts[1] === "github-sponsors") {
-                    print_output("Buy me a coffee at ");
-                    var link = document.createElement("a");
-                    link.innerText = "github.com/sponsors/TheEnbyperor\n";
-                    link.href = "https://github.com/sponsors/TheEnbyperor";
-                    link.target = "_blank";
-                    link.tabIndex = -1;
-                    output_html(link);
-                } else if (cmd_parts[1] === "twitter") {
-                    var link = document.createElement("a");
-                    link.innerText = "@TheEnbyperor\n";
-                    link.href = "https://twitter.com/TheEnbyperor";
-                    link.target = "_blank";
-                    link.tabIndex = -1;
-                    output_html(link);
-                } else if (cmd_parts[1] === "irc") {
-                    var link = document.createElement("a");
-                    link.innerText = "TheEnbyperor on libera.chat\n";
-                    link.href = "ircs://irc.libera.chat:6697/TheEnbyperor";
-                    link.target = "_blank";
-                    link.tabIndex = -1;
-                    output_html(link);
-                } else if (cmd_parts[1] === "xmpp") {
-                    var link = document.createElement("a");
-                    link.innerText = "q@a3.pm\n";
-                    link.href = "xmpp://q@a3.pm";
-                    link.target = "_blank";
-                    link.tabIndex = -1;
-                    output_html(link);
-                } else if (cmd_parts[1] === "about") {
-                    var about = document.createElement("div");
-
-                    var p = document.createElement("p");
-                    p.innerText = "Hi I’m Q!";
-                    about.appendChild(p);
-
-                    var img = document.createElement("img")
-                    img.src = "/pfp.png";
-                    img.style.width = "100px";
-                    about.appendChild(img);
-
-                    p = document.createElement("p");
-                    p.innerText = "Things to note about Q:";
-                    about.appendChild(p);
-
-                    var ul = document.createElement("ul");
-                    var li = document.createElement("li")
-                    li.innerText = "🧙🏻‍♀️ Is a witch 🧙🏻‍♀";
-                    ul.appendChild(li);
-                    li = document.createElement("li")
-                    li.innerText = "✨ Sparkly ✨";
-                    ul.appendChild(li);
-                    li = document.createElement("li")
-                    li.innerText = "📚 Guardian of the obscure standards 📚";
-                    ul.appendChild(li);
-                    li = document.createElement("li")
-                    li.innerText = "🦀 Likes rust, perhaps a bit too much 🦀";
-                    ul.appendChild(li);
-                    about.appendChild(ul)
-
-                    p = document.createElement("p");
-                    p.innerText = "Supported locales:";
-                    about.appendChild(p);
-
-                    ul = document.createElement("ul");
-                    li = document.createElement("li")
-                    li.innerText = "🇬🇧 en_GB";
-                    ul.appendChild(li);
-                    li = document.createElement("li")
-                    li.innerText = "🏴󠁧󠁢󠁷󠁬󠁳󠁿 cy_CY";
-                    ul.appendChild(li);
-                    about.appendChild(ul)
-
-                    output_html(about);
-                } else {
-                    print_output("cat: No such file\n");
-                }
+            if (COMMANDS[cmd_parts[0]]) {
+                COMMANDS[cmd_parts[0]]["cmd"](cmd_parts.slice(1));
             } else {
                 print_output("Unknown command\n");
             }
+        }
+
+        function cmd_pwd() {
+            var link = document.createElement("a");
+            link.innerText = "https://magicalcodewit.ch\n";
+            link.href = "https://magicalcodewit.ch";
+            link.tabIndex = -1;
+            output_html(link);
+        }
+
+        function cmd_ls() {
+            print_output("about email github github-sponsors twitter irc xmpp\n");
+        }
+
+        function cmd_help() {
+            print_output("Available commands: help ls pwd cat\n");
+        }
+
+        var FILES = {};
+
+        var link = document.createElement("a");
+        link.innerText = "q@magicalcodewit.ch\n";
+        link.href = "mailto:q@magicalcodewit.ch";
+        link.target = "_blank";
+        link.tabIndex = -1;
+        FILES["email"] = link;
+
+        var link = document.createElement("a");
+        link.innerText = "github.com/TheEnbyperor\n";
+        link.href = "https://github.com/TheEnbyperor";
+        link.target = "_blank";
+        link.tabIndex = -1;
+        FILES["github"] = link;
+
+        var span = document.createElement("span");
+        span.appendChild(document.createTextNode("Buy me a coffee at "));
+        var link = document.createElement("a");
+        link.innerText = "github.com/sponsors/TheEnbyperor\n";
+        link.href = "https://github.com/sponsors/TheEnbyperor";
+        link.target = "_blank";
+        link.tabIndex = -1;
+        span.appendChild(link);
+        FILES["github-sponsors"] = span;
+
+        var link = document.createElement("a");
+        link.innerText = "@TheEnbyperor\n";
+        link.href = "https://twitter.com/TheEnbyperor";
+        link.target = "_blank";
+        link.tabIndex = -1;
+        FILES["twitter"] = link;
+
+        var link = document.createElement("a");
+        link.innerText = "TheEnbyperor on libera.chat\n";
+        link.href = "ircs://irc.libera.chat:6697/TheEnbyperor";
+        link.target = "_blank";
+        link.tabIndex = -1;
+        FILES["irc"] = link;
+
+        var link = document.createElement("a");
+        link.innerText = "q@a3.pm\n";
+        link.href = "xmpp://q@a3.pm";
+        link.target = "_blank";
+        link.tabIndex = -1;
+        FILES["xmpp"] = link;
+
+        var about = document.createElement("div");
+
+        var p = document.createElement("p");
+        p.innerText = "Hi I’m Q!";
+        about.appendChild(p);
+
+        var img = document.createElement("img")
+        img.src = "/pfp.png";
+        img.style.width = "100px";
+        about.appendChild(img);
+
+        p = document.createElement("p");
+        p.innerText = "Things to note about Q:";
+        about.appendChild(p);
+
+        var ul = document.createElement("ul");
+        var li = document.createElement("li")
+        li.innerText = "🧙🏻‍♀️ Is a witch 🧙🏻‍♀";
+        ul.appendChild(li);
+        li = document.createElement("li")
+        li.innerText = "✨ Sparkly ✨";
+        ul.appendChild(li);
+        li = document.createElement("li")
+        li.innerText = "📚 Guardian of the obscure standards 📚";
+        ul.appendChild(li);
+        li = document.createElement("li")
+        li.innerText = "🦀 Likes rust, perhaps a bit too much 🦀";
+        ul.appendChild(li);
+        about.appendChild(ul)
+
+        p = document.createElement("p");
+        p.innerText = "Supported locales:";
+        about.appendChild(p);
+
+        ul = document.createElement("ul");
+        li = document.createElement("li")
+        li.innerText = "🇬🇧 en_GB";
+        ul.appendChild(li);
+        li = document.createElement("li")
+        li.innerText = "🏴󠁧󠁢󠁷󠁬󠁳󠁿 cy_CY";
+        ul.appendChild(li);
+        about.appendChild(ul);
+        FILES["about"] = about;
+
+        function cmd_cat(args) {
+            for (var arg of args) {
+                if (FILES[arg]) {
+                    output_html(FILES[arg])
+                } else {
+                    print_output("cat: No such file\n");
+                    return;
+                }
+            }
+        }
+
+        function complete_cat() {
+            return Object.keys(FILES);
         }
     }
 </script>
