@@ -367,12 +367,8 @@
             output_html(link);
         }
 
-        function cmd_ls() {
-            print_output("about email github github-sponsors twitter irc xmpp\n");
-        }
-
         function cmd_help() {
-            print_output("Available commands: help echo ls pwd cat cd cowsay lolcat\n");
+            print_output("Available commands:\n" + Object.keys(COMMANDS).join("\t") + "\n");
         }
 
         function cmd_echo(args) {
@@ -489,6 +485,10 @@
         ul.appendChild(li);
         about.appendChild(ul);
         FILES["about"] = about;
+
+        function cmd_ls() {
+            print_output(Object.keys(FILES).join("\t") + "\n");
+        }
 
         function cmd_cat(args) {
             for (var arg of args) {
