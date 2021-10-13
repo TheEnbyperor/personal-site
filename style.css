@@ -15,6 +15,7 @@ body {
     margin: 0;
     box-sizing: border-box;
     margin-bottom: env(safe-area-inset-bottom);
+    overflow: hidden;
 }
 
 footer {
