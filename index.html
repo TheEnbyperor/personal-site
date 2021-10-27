@@ -441,6 +441,13 @@
         link.tabIndex = -1;
         FILES["xmpp"] = link;
 
+        var link = document.createElement("a");
+        link.innerText = "linkedin.com/in/theenbyperor\n";
+        link.href = "https://www.linkedin.com/in/theenbyperor/";
+        link.target = "_blank";
+        link.tabIndex = -1;
+        FILES["linkedin"] = link;
+
         var about = document.createElement("div");
 
         var p = document.createElement("p");
@@ -508,6 +515,7 @@
             "github": "https://github.com/TheEnbyperor",
             "github-sponsors": "https://github.com/sponsors/TheEnbyperor",
             "twitter": "https://twitter.com/TheEnbyperor",
+            "linkedin": "https://www.linkedin.com/in/theenbyperor/",
         }
 
         function cmd_cd(args) {
