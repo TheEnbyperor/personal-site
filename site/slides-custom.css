@@ -1,0 +1,33 @@
+:root {
+  --r-background-color: #f7fafc;
+  --r-main-font: 'Montserrat', sans-serif;
+  --r-heading-font: 'Montserrat', sans-serif;
+  --r-heading-color: #2a4365;
+}
+
+.reveal-viewport::before, .pdf-page::before {
+  background: linear-gradient(270deg, #319795, #2a4365, #3182ce);
+  content: '';
+  display: block;
+  bottom: -4vh;
+  left: 0;
+  position: absolute;
+  right: 0;
+  transform: skewY(-2deg);
+  z-index: -1;
+  height: 15vh;
+}
+
+.reveal-viewport::after, .pdf-page::after {
+  content: '';
+  background-image: url("https://as207960.net/assets/img/shark-curl.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  display: block;
+  position: absolute;
+  left: 15px;
+  bottom: 15px;
+  height: 15vh;
+  width: 15vh;
+}
