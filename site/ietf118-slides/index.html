@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Automated Certificate Management Environment (ACME) Extensions for ".onion" Special-Use Domain Name</title>
+
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
+		<link rel="stylesheet" href="/reveal-js/reset.css">
+		<link rel="stylesheet" href="/reveal-js/reveal.css">
+		<link rel="stylesheet" href="/reveal-js/theme/white.css">
+		<link rel="stylesheet" href="/reveal-js/highlight/monokai.css">
+		<link rel="stylesheet" href="/slides-custom.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h2>ACME for onions</h2>
+					<h3><code>draft-ietf-acme-onion</code></h3>
+					<h4>Q Misell, Glauca Digital</h4>
+					<p>IETF 118, Wednesday 8<sup>th</sup> of November 2023</p>
+					<p>
+						Fedi: <a href="https://glauca.space/@q">@q@glauca.space</a><br/>
+						Email: <a href="mailto:q@as207960.net">q@as207960.net</a>
+					</p>
+				</section>
+				<section>
+					<h2>Current state of things</h2>
+					<ul>
+						<li>Adding the CA/BF methods to ACME is uncontroversial</li>
+						<li>CAA isn't quite there</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Why CAA?</h2>
+					<ul>
+						<li>Consistency with every other TLD</li>
+						<li>Reduce chances of mis-issuance</li>
+						<li>Enforce organisational policy</li>
+						<li>Publish IODEF endpoint/contact details</li>
+					</ul>
+				</section>
+				<section>
+					<h2>How did -00 do this?</h2>
+					<p>Extra field in the Tor hidden service descriptor</p>
+				</section>
+				<section>
+					<h2>Implementation challenges</h2>
+					<ul>
+						<li>CAs need to run a Tor client</li>
+						<li>Audits for the Tor client</li>
+						<li>Client memory safety</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Solution: CAA over ACME</h2>
+				</section>
+				<section>
+					<p>Tor directory authorities are already untrusted in the security model.</p>
+					<p>The HS descriptor is verified purely using the service's public key.</p>
+				</section>
+				<section>
+					<p>The ACME client can send the signed CAA records in the ACME exchange without reducing cryptographic guarantees.</p>
+					<p><code>inBandOnionCAARequired</code> to signal the CA requires this method.</p>
+				</section>
+				<section>
+					<h2>Where to put CAA?</h2>
+					<ol>
+						<li>In the challenge response, or</li>
+						<li>In the finalize call</li>
+					</ol>
+				</section>
+				<section>
+					<h2>In the challenge response</h2>
+					<ul>
+						<li>Constrains all protocol modifications to one API method.</li>
+						<li>Certificate must be issued within 8 hours of a challenge response.</li>
+					</ul>
+				</section>
+				<section>
+					<h2>In the finalize call</h2>
+					<ul>
+						<li>Allows issuance at any time</li>
+						<li>Allows using other validation methods</li>
+					</ul>
+				</section>
+				<section>
+					<pre><code data-trim class="language-json">
+{
+  "csr": "MIIBPTCBxAIBADBFMQ...FS6aKdZeGsysoCo4H9P",
+  "onionCAA": {
+    "5anebu2...2qd.onion": {
+      "caa": "caa 128 issue \"...",
+      "expiry": 1697210719,
+      "signature": "u_iP6JZ4JZB...pxAA=="
+    }
+  }
+}
+					</code></pre>
+					<pre><code class="language-plaintext">"onion-caa|" || expiry || "|" || caa</code></pre>
+					<p>Is this the right way to do it?</p>
+				</section>
+				<section>
+					<h2>Questions?</h2>
+					<h4>Q Misell, Glauca Digital</h4>
+					<p>Slide deck available at <a href="https://magicalcodewit.ch/ietf118-slides/">magicalcodewit.ch/ietf118-slides/</a></p>
+					<p>
+						Fedi: <a href="https://glauca.space/@q">@q@glauca.space</a><br/>
+						Email: <a href="mailto:q@as207960.net">q@as207960.net</a>
+					</p>
+				</section>
+			</div>
+		</div>
+
+		<script src="/reveal-js/reveal.js"></script>
+		<script src="/reveal-js/notes/notes.js"></script>
+		<script src="/reveal-js/markdown/markdown.js"></script>
+		<script src="/reveal-js/highlight/highlight.js"></script>
+		<script>
+			Reveal.initialize({
+				hash: true,
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>

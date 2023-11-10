@@ -1,0 +1,399 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>ACME for Onions</title>
+
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
+		<link rel="stylesheet" href="/reveal-js/reset.css">
+		<link rel="stylesheet" href="/reveal-js/reveal.css">
+		<link rel="stylesheet" href="/reveal-js/theme/white.css">
+		<link rel="stylesheet" href="/reveal-js/highlight/monokai.css">
+		<link rel="stylesheet" href="/slides-custom.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h2>ACME for onions</h2>
+					<h4>Q Misell, King's Collage, Aberdeen</h4>
+					<p>At the Max-Planck-Institut für Informatik</p>
+					<p>Wednesday 22<sup>nd</sup> of November 2023</p>
+					<p>
+						Fedi: <a href="https://glauca.space/@q">@q@glauca.space</a><br/>
+						Email: <a href="mailto:q.misell.21@abdn.ac.uk">q.misell.21@abdn.ac.uk</a>
+					</p>
+				</section>
+				<section>
+					<h2>What is an onion?</h2>
+					<img src="1200px-Onion_on_White.png" alt="" class="fragment" style="width: 350px"/>
+				</section>
+				<section>
+					<h2>What is Tor?</h2>
+					<p>The Onion Router</p>
+					<img src="image-20170228-13104-ylxylj.png" alt="" style="width: 750px" />
+				</section>
+				<section>
+					<img src="int-surv-onion.png" alt="" style="width: 800px">
+				</section>
+				<section>
+					<h2>Ok but really what is an Onion?</h2>
+				</section>
+				<section>
+					<code>5anebuc235wb...3vdtdvcg2i2m2qd.onion</code>
+					<pre><code data-trim class="language-python">
+address = base32(PUBKEY | checksum | VERSION) + ".onion"
+checksum = H(".onion checksum" | PUBKEY | VERSION)[:2]
+					</code></pre>
+					<p style="font-size: 0.6em">Tor Rendezvous Specification - Version 3 § [ONIONADDRESS]</p>
+				</section>
+				<section>
+					<img src="onion-service-01.png" alt="" style="width: 600px">
+				</section>
+				<section>
+					<img src="onion-service-02.png" alt="" style="width: 600px">
+				</section>
+				<section>
+					<img src="onion-service-03.png" alt="" style="width: 600px">
+				</section>
+				<section>
+					<img src="onion-service-04.png" alt="" style="width: 600px">
+				</section>
+				<section>
+					<h2>Problem with this?</h2>
+					<h4>Only a bit of TLS on Onions</h4>
+				</section>
+				<section>
+					<h2>Why even have certificates?</h2>
+					<ul>
+						<li>HTTP/2</li>
+						<li>PCI DSS</li>
+						<li>Defence-in-depth</li>
+						<li>HTTPS only browser features</li>
+						<li>
+							<ul>
+								<li>Secure cookies</li>
+								<li>Content Security Policy</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Goals of this work</h2>
+					<p>
+						Define extensions to ACME to automate the issuance of X.509 certificates for Tor hidden services
+						in line with the accepted methods in the CA/BF BR.
+					</p>
+					<h2>Non-goals</h2>
+					<p>
+						Any method not accepted by the CA/BF.
+					</p>
+				</section>
+				<section>
+					<h2>CA/BF?</h2>
+					<img src="CABForum_logo.png" alt="" style="width: 500px"/>
+				</section>
+				<section>
+					<img src="Screenshot%202023-11-09%20at%2016.39.11.png" alt="" style="width: 400px"/>
+				</section>
+				<section>
+					<h2>CA/BF BR Appendix B</h2>
+					<ul>
+						<li>§ 3.2.2.4.18 - Agreed-Upon Change to Website v2</li>
+						<li>§ 3.2.2.4.19 - Agreed-Upon Change to Website - ACME</li>
+						<li>§ 3.2.2.4.20 - TLS Using ALPN</li>
+						<li>§ B.2.b - Special CSR</li>
+					</ul>
+				</section>
+				<section>
+					<h2>ACME?</h2>
+					<p>RFC 8555</p>
+					<img src="ACME-MarkOnly.png" alt="" style="width: 250px;">
+				</section>
+				<section>
+					<img src="le-logo-twitter.png" alt="" style="width: 400px;">
+				</section>
+				<section>
+					<q>So I can just go get a certificate from Let's Encrypt?</q>
+				</section>
+				<section>
+					<h2>Current state of things</h2>
+					<ul>
+						<li>DigiCert (EV only)</li>
+						<li>HARICA</li>
+						<li>No automation</li>
+					</ul>
+				</section>
+				<section>
+					<h2>So lets actually automate this</h2>
+				</section>
+				<section>
+					<h2>Identifier type</h2>
+					<pre><code data-trim>
+{
+  "type": "dns",
+  "value": "bbcweb3hytmz...rad.onion"
+}
+						</code></pre>
+					<p>
+						Clients can be oblivious to the fact that the identifier is a Tor hidden service
+						with "http-01" or "tls-alpn-01" validation methods.
+					</p>
+				</section>
+				<section>
+					<h2>New <code>onion-csr-01</code> Validation Method</h2>
+					<p>
+						Implements CA/BF BR § B.2.b
+					</p>
+					<p>
+						Clients prove control over the .onion domain by signing a CSR with the key of the
+						.onion domain.
+					</p>
+				</section>
+				<section>
+					<pre><code data-trim style="font-size: 0.6em; line-height: 1;" class="language-plaintext">
+Certificate Request:
+    Data:
+        Version: 1 (0x0)
+        Subject:
+        Subject Public Key Info:
+            Public Key Algorithm: ED25519
+                ED25519 Public-Key:
+                pub:
+                    e8:1a:40:d3:46:5e:05:ad:f6:c1:0b:9f:b6:6a:8a:
+                    ca:c0:f9:bd:50:de:f7:51:cc:75:12:5e:83:60:3f:
+                    be:91
+        Attributes:
+            2.23.140.42              :unable to print attribute
+            2.23.140.41              :unable to print attribute
+            Requested Extensions:
+    Signature Algorithm: ED25519
+    Signature Value:
+        19:7d:36:f2:ff:91:8d:8b:c8:80:1b:01:01:b2:ad:78:0a:3d:
+        39:8a:4b:40:44:4b:10:bf:42:85:fb:ab:d1:a9:b9:2b:da:15:
+        22:42:5b:57:0a:ff:78:c8:f0:6c:03:29:b3:7d:5c:cc:b3:81:
+        5e:c8:e0:6b:be:e3:f6:f4:42:07
+-----BEGIN CERTIFICATE REQUEST-----
+MIGxMGUCAQAwADAqMAUGAytlcAMhAOgaQNNGXgWt9sELn7ZqisrA+b1Q3vdRzHUS
+XoNgP76RoDIwFAYEZ4EMKjEMBArAIGS2iOced4saMBoGBGeBDCkxEgQQilz4XfL/
+oHw69nZtaAz99DAFBgMrZXADQQAZfTby/5GNi8iAGwEBsq14Cj05iktAREsQv0KF
++6vRqbkr2hUiQltXCv94yPBsAymzfVzMs4FeyOBrvuP29EIH
+-----END CERTIFICATE REQUEST-----
+					</code></pre>
+				</section>
+				<section>
+					<h2>Great! We're done right?</h2>
+					<h2 class="fragment">No so fast, what about CAA?</h2>
+				</section>
+				<section>
+					<h2>CAA?</h2>
+					<h4>Certificate Authority Authorization</h4>
+					<p>RFC 8659, 8657</p>
+				</section>
+				<section>
+					<pre><code data-trim class="language-plaintext">
+example.org CAA 0 issue "ca.org;validationmethods=dns-01"
+example.org CAA 0 issuewild "ca.org"
+example.org CAA 128 issue "otherca.com;accounturi=https://otherca.com/acct/123456"
+					</code></pre>
+				</section>
+				<section>
+					<p>
+						.onion domains aren't in the DNS, so standard CAA records can't be used. Instead, CAA records
+						are encoded in the BIND zone file format the second layer hidden service descriptor.
+					</p>
+				</section>
+				<section>
+					<img src="onion-service-01.png" alt="" style="width: 600px">
+				</section>
+				<section>
+					<h3>Outer layer</h3>
+					<p>Fetched with the service's blinded public key</p>
+					<pre><code data-trim class="language-plaintext">
+hs-descriptor 3
+descriptor-lifetime ...
+descriptor-signing-key-cert
+-----BEGIN ED25519 CERT-----
+...
+-----END ED25519 CERT-----
+revision-counter ...
+superencrypted
+-----BEGIN MESSAGE-----
+...
+-----END MESSAGE-----
+					</code></pre>
+				</section>
+				<section>
+					<h3>First layer encrypted data</h3>
+					<p>Encrypted with the service's (non-blinded) public key</p>
+					<pre><code data-trim class="language-plaintext">
+desc-auth-type x25519
+desc-auth-ephemeral-key ...
+auth-client ...
+auth-client ...
+auth-client ...
+encrypted
+-----BEGIN MESSAGE----
+...
+-----END MESSAGE-----
+					</code></pre>
+				</section>
+				<section>
+					<h3>Second layer encrypted data</h3>
+					<p>Encrypted with data from <code>auth-client</code></p>
+					<pre><code class="language-plaintext" data-trim>
+create2-formats 2
+introduction-point ...
+onion-key ntor ...
+auth-key
+-----BEGIN ED25519 CERT-----
+...
+-----END ED25519 CERT-----
+enc-key ntor ...
+enc-key-cert
+-----BEGIN ED25519 CERT-----
+...
+-----END ED25519 CERT-----
+introduction-point ...
+					</code></pre>
+				</section>
+				<section>
+					<h2>Client authentication</h2>
+					<p>
+						Tor allows hidden services to restrict which clients can connect using client authentication.
+					</p>
+				</section>
+				<section>
+					<p>
+						New <code>authKey</code> field to allow hidden service operators to allow the CA's Tor client
+						to read their hidden service descriptor to issue certificates.
+					</p>
+					<pre><code data-trim class="language-json">
+{
+  "type":"onion-csr-01",
+  "status":"pending",
+  "authKey":{
+    "kty":"OKP",
+    "crv":"Ed25519",
+    "x":"J-7Sj0b6wKwesnmKKxL8dE_qPTnh5LKw2wf9coY3mx0"
+  },
+  "nonce":"ilz4XfL_oHw69nZtaAz99A",
+  "url": "..."
+}
+					</code></pre>
+				</section>
+				<section>
+					<h2>CAA records</h2>
+					<pre><code class="language-plaintext" data-trim data-line-numbers="3-4">
+create2-formats 2
+single-onion-service
+caa 128 issue "ca.org;validationmethods=onion-csr-01"
+caa 0 iodef "mailto:security@example.com"
+introduction-point AwAGsAk5n...
+					</code></pre>
+				</section>
+				<section>
+					<h2>CAA interaction with client authentication</h2>
+					<p>
+						New field in the first layer hidden service descriptor to signal that there are CAA records
+						in the second layer descriptor.
+					</p>
+					<pre><code class="language-plaintext" data-trim data-line-numbers="2">
+desc-auth-type x25519
+caa-critical
+auth-client ...
+					</code></pre>
+				</section>
+				<section>
+					<h2>Why CAA?</h2>
+					<ul>
+						<li>Consistency with every other TLD</li>
+						<li>Reduce chances of mis-issuance</li>
+						<li>Enforce organisational policy</li>
+						<li>Publish IODEF endpoint/contact details</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Implementation challenges</h2>
+					<ul>
+						<li>CAs need to run a Tor client</li>
+						<li>Audits for the Tor client</li>
+						<li>Client memory safety</li>
+					</ul>
+				</section>
+				<section>
+					<h2><code>http-01</code> and <code>tls-alpn-01</code></h2>
+					<p>Full Tor client connection required, no way around this.</p>
+				</section>
+				<section>
+					<h2>Solution: CAA over ACME</h2>
+				</section>
+				<section>
+					<p>Tor directory authorities are already untrusted in the security model of Tor.</p>
+					<p>The HS descriptor is verified purely using the service's public key.</p>
+				</section>
+				<section>
+					<pre><code data-trim class="language-json">
+{
+  "csr": "MIIBPTCBxAIBADBFMQ...FS6aKdZeGsysoCo4H9P",
+  "onionCAA": {
+    "5anebu2...2qd.onion": {
+      "caa": "caa 128 issue \"...",
+      "expiry": 1697210719,
+      "signature": "u_iP6JZ4JZB...pxAA=="
+    }
+  }
+}
+					</code></pre>
+					<pre><code class="language-plaintext">"onion-caa|" || expiry || "|" || caa</code></pre>
+				</section>
+				<section>
+					<h2>Current state of work</h2>
+				</section>
+				<section>
+					<p>Adopted as an IETF working group document, nearing last call</p>
+				</section>
+				<section>
+					<p>Reference CA implementation at <a href="https://acmeforonions.org">acmeforonions.org</a></p>
+				</section>
+				<section>
+					<p>
+						Certbot plugin for <code>onion-csr-01</code><br/>
+						<a href="https://pypi.org/project/certbot-onion/">certbot-onion</a>
+					</p>
+				</section>
+				<section>
+					<p>Tor Spec Proposal <code>343-rend-caa</code></p>
+				</section>
+				<section>
+					<p>Formal security audit in progress</p>
+				</section>
+				<section>
+					<h2>Questions?</h2>
+					<h4>Q Misell, King's Collage, Aberdeen</h4>
+					<p>Slide deck available at <a href="https://magicalcodewit.ch/mpi-inf-slides/">magicalcodewit.ch/mpi-inf-slides/</a></p>
+					<p>
+						Fedi: <a href="https://glauca.space/@q">@q@glauca.space</a><br/>
+						Email: <a href="mailto:q.misell.21@abdn.ac.uk">q.misell.21@abdn.ac.uk</a>
+					</p>
+				</section>
+			</div>
+		</div>
+
+		<script src="/reveal-js/reveal.js"></script>
+		<script src="/reveal-js/notes/notes.js"></script>
+		<script src="/reveal-js/markdown/markdown.js"></script>
+		<script src="/reveal-js/highlight/highlight.js"></script>
+		<script>
+			Reveal.initialize({
+				hash: true,
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
