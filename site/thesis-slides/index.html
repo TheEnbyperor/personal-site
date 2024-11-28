@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>QUIC over high Bandwidth-Delay Product links</title>
+
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
+		<link rel="stylesheet" href="/reveal-js/reset.css">
+		<link rel="stylesheet" href="/reveal-js/reveal.css">
+		<link rel="stylesheet" href="/reveal-js/theme/white.css">
+		<link rel="stylesheet" href="/reveal-js/highlight/monokai.css">
+		<link rel="stylesheet" href="/slides-custom.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h2>QUIC over high Bandwidth-Delay Product links</h2>
+					<h4>Q Misell</h4>
+					<p>Tuesday 7<sup>th</sup> of May 2024</p>
+				</section>
+				<section>
+					<h2>What is QUIC?</h2>
+				</section>
+				<section>
+					<h2>Why QUIC?</h2>
+					<ul>
+						<li>Replacement for TCP</li>
+						<li>Transferred over UDP, moving control from the Kernel to the application</li>
+						<li>Connection path migration and feature negotiation</li>
+						<li>0-RTT connection initiation</li>
+						<li>TLS baked in</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Satellite broadband</h2>
+					<img src="sat-internet.png" alt="" style="width: 600px">
+				</section>
+				<section>
+					<img src="orbits.png" alt="" style="width: 400px">
+					<p>
+						GEO: 35.000km high, ~800ms RTT<br/>
+						LEO: <1.200km high, ~60ms RTT
+					</p>
+				</section>
+				<section>
+					<h2>What is Bandwidth-Delay Product (BDP)?</h2>
+					<p>
+						Given a 150Mbps satellite link with 800ms of Round-Trip delay ~15MiB are in
+						flight at any one time.
+					</p>
+				</section>
+				<section>
+					<h2>TCP PEPs</h2>
+					<img src="pep.png" alt="" style="width: 500px; margin-bottom: 0"/>
+					<p style="font-size: 0.5em; margin-top: 0; color: #aaa;">&copy; Sedrubal, CC BY-SA 4.0, via Wikimedia Commons</p>
+				</section>
+				<section>
+					<h2>Research goals</h2>
+					<ul>
+						<li>Find an alternative solution to improve performance when using QUIC over satellite connections</li>
+						<li>Backwards compatible with existing QUIC implementations</li>
+						<li>Deployable at internet scale without the need for a flag day</li>
+						<li>Suitable for submission to the IETF as an RFC</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Careful resume</h2>
+					<h4>Convergence of Congestion Control from Retained State</h4>
+					<a href="https://datatracker.ietf.org/doc/draft-ietf-tsvwg-careful-resume/">draft-ietf-tsvwg-careful-resume</a>
+				</section>
+				<section>
+					<h3>BDP Tokens</h3>
+					<a href="https://theenbyperor.github.io/quic-bdp-token/draft-misell-quic-ex-token.html">draft-misell-quic-bdp-token</a>
+					<pre><code class="language-text">BDP Token {
+    Private Data Length (i),
+    Private Data (..),
+    Capacity (i),
+    RTT (i),
+    Requested Capacity (i),
+}</code></pre>
+				</section>
+				<section>
+					<img src="Screenshot%202024-02-17%20at%2013.44.07.png" alt=""/>
+				</section>
+				<section>
+					<h2>Some time passes</h2>
+				</section>
+				<section>
+					<img src="Screenshot%202024-02-17%20at%2013.45.43.png" alt=""/>
+				</section>
+				<section>
+					<img src="Screenshot%202024-02-17%20at%2013.46.04.png" alt=""/>
+				</section>
+				<section>
+					<h2>Let's put it all together!</h2>
+				</section>
+				<section>
+					<h3>Without BDP Tokens and Careful Resume</h3>
+					<img src="Screenshot%202024-05-06%20at%2020.38.38.png" style="width: 750px"/>
+				</section>
+				<section>
+					<h3>With BDP Tokens and Careful Resume</h3>
+					<img src="Screenshot%202024-05-06%20at%2020.38.49.png" style="width: 750px"/>
+				</section>
+				<section>
+					<h3>Effect on data transfer rates</h3>
+					<img src="rates-1.png" style="width: 750px"/>
+				</section>
+				<section>
+					<h2>Questions?</h2>
+					<p style="font-size: 0.9em;">Slide deck available at<br/><a href="https://magicalcodewit.ch/thesis-slides/">magicalcodewit.ch/thesis-slides/</a></p>
+				</section>
+			</div>
+		</div>
+
+		<script src="/reveal-js/reveal.js"></script>
+		<script src="/reveal-js/notes/notes.js"></script>
+		<script src="/reveal-js/markdown/markdown.js"></script>
+		<script src="/reveal-js/highlight/highlight.js"></script>
+		<script>
+			Reveal.initialize({
+				hash: true,
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
