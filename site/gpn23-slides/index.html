@@ -1,0 +1,919 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Semestertickets ohne Überwachung - reverse engineering public transport apps</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/reveal-js/reset.css">
+    <link rel="stylesheet" href="/reveal-js/reveal.css">
+    <link rel="stylesheet" href="/reveal-js/theme/white.css">
+    <link rel="stylesheet" href="/reveal-js/highlight/monokai.css">
+    <link rel="stylesheet" href="/slides-personal.css">
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h2>Semestertickets ohne Überwachung</h2>
+            <h3>Reverse engineering public transport apps</h3>
+            <h4>Q Misell</h4>
+            <p>Gulaschprogrammiernacht</p>
+            <p>20. Juni 2025</p>
+        </section>
+        <section>
+            <h2>Who am I?</h2>
+            <ul>
+                <li>Researcher at the Max-Planck Institut für Informatik</li>
+                <li>Runs Glauca Digital</li>
+            </ul>
+        </section>
+        <section>
+            <div style="text-align: left; display: inline-block;">
+            <p style="font-size: 100px">schtick</p>
+            <p style="font-size: 60px"><b>noun</b> (<em>plural</em> schticks)</p>
+                <p>A characteristic trait or theme,<br/>especially in the way people or media present themselves.</p>
+            </div>
+        </section>
+        <section>
+            <h2>Verkehrsverbünde everywhere</h2>
+            <h3>So many Verkehrsverbünde</h3>
+            <img src="Karte_der_Verkehrsverbünde_und_Tarifverbünde_in_Deutschland,_Österreich_und_der_Schweiz.png" alt="" style="height: 800px">
+        </section>
+        <section>
+            <h2>Before Digitalisierung</h2>
+            <img src="semtix-paper.jpg" alt="">
+        </section>
+        <section>
+            <h2>Oops! The politicians had Ideas™</h2>
+            <img src="D-Ticket_Logo.svg" alt="" style="width: 500px">
+        </section>
+        <section>
+            <img src="fahrkarte-digital.png" alt="" style="height: 800px">
+        </section>
+        <section>
+            <h3>Comedic, but it works</h3>
+            <img src="dsemtix.png" alt="" style="width: 1000px">
+        </section>
+        <section>
+            <h2>Oops! The Verkehrsverbünde had Ideas™</h2>
+            <h3>We <em>obviously</em> need an app<sup>1</sup></h3>
+            <p>[1]: XKCD 927</p>
+        </section>
+        <section>
+            <h2>A selection of problems with apps</h2>
+            <h3>Not everyone has:</h3>
+            <ul>
+                <li>A modern smartphone</li>
+                <li>A phone at all</li>
+                <li>A device in the Apple/Google ecosystem</li>
+                <li>A reliable Internet connection</li>
+            </ul>
+        </section>
+        <section>
+            <h2>S-Bahn Berlin</h2>
+            <p>
+                c.f. <a href="https://spline.de/blog/2025/04/01/sbahn-semesterticket/">Semsterticket ohne Google und Apple - Spline FU-Berlin</a>
+            </p>
+            <img src="IMG_3639.png" alt="" style="height: 800px">
+        </section>
+        <section>
+            <h2>SaarVV</h2>
+            <p>They have a Webapp, can I get my ticket there?</p>
+            <img src="IMG_3640.png" alt="" style="height: 800px" class="fragment">
+        </section>
+        <section>
+            <h3>But what do I need to show<br/>the ticket inspector, really?</h3>
+        </section>
+        <section>
+            <h4 class="fragment" data-fragment-index="1">Only the barcode matters!</h4>
+            <div class="r-stack">
+                <img src="IMG_3638.png" alt="" style="height: 800px">
+                <img src="IMG_3638-covered.png" alt="" style="height: 800px" class="fragment" data-fragment-index="1">
+            </div>
+        </section>
+        <section>
+            <h3>Some less 'professional' ways<br/>to free a ticket</h3>
+            <ul>
+                <li>Make a screenshot</li>
+                <li>Take a picture of the screen</li>
+            </ul>
+            <p>
+                The ticket inspector likely won't like this!
+            </p>
+        </section>
+        <section>
+            <p>Made with Zügli</p>
+            <img src="IMG_3641.png" alt="" style="height: 800px">
+        </section>
+        <section>
+            <h3>'What's inside my train ticket?'</h3>
+            <p>My talk from Congress on the data inside these barcodes.</p>
+            <p>
+                Available on <a href="https://media.ccc.de/v/38c3-what-s-inside-my-train-ticket">media.ccc.de</a>
+            </p>
+        </section>
+        <section>
+            <h3>It's just a .zip file</h3>
+            <img src="directory_structure_2x.png" alt="">
+        </section>
+        <section>
+            <h3>FossWallet / fWallet / PassAndroid</h3>
+            <div>
+                <img src="Bildschirmfoto%202025-05-18%20um%2017.10.17.png" alt="" style="height: 800px">
+                <img src="Bildschirmfoto%202025-05-18%20um%2017.09.11.png" alt="" style="height: 800px">
+                <img src="Bildschirmfoto%202025-05-18%20um%2017.09.26.png" alt="" style="height: 800px">
+            </div>
+        </section>
+        <section>
+            <h3>PassWallet / WalletPasses</h3>
+            <h4>Something prettier, but closed source</h4>
+            <img src="Bildschirmfoto%202025-05-18%20um%2017.17.56.png" alt="" style="height: 800px">
+            <img src="Bildschirmfoto%202025-05-18%20um%2023.34.05.png" alt="" style="height: 800px">
+        </section>
+        <section>
+            <p>
+                This still requires installing the VU's app<br/>
+                to get the barcode on every renewal.<br/>
+                We can do better than that.
+            </p>
+        </section>
+        <section>
+            <img src="Bildschirmfoto%202025-05-25%20um%2015.52.33.png" alt="" style="height: 800px">
+            <img src="Bildschirmfoto%202025-05-25%20um%2015.52.35.png" alt="" style="height: 900px">
+        </section>
+        <section>
+            <img src="Bildschirmfoto%202025-05-25%20um%2015.55.52.png" alt="" style="height: 1100px">
+        </section>
+        <section>
+            <p>Cool! Lets login.</p>
+            <pre><code data-trim class="language-http" data-line-numbers>
+POST https://saarvv.tickeos.de/index.php/mobileService/login HTTP/2
+Content-Type: application/json
+
+{
+  "credentials": {
+    "password": "&lt;redacted>",
+    "username": "q@magicalcodewit.ch"
+  }
+}
+            </code></pre>
+        </section>
+        <section>
+            <p>Ah, not quite...</p>
+            <pre><code data-trim class="language-http" data-line-numbers>
+HTTP/2 400 Bad Request
+Content-Type: application/json
+
+{
+  "message": "Unbekannter Client"
+}
+            </code></pre>
+        </section>
+        <section>
+            <p>Maybe we need a UA?</p>
+            <pre><code data-trim class="language-http" data-line-numbers="3">
+POST https://saarvv.tickeos.de/index.php/mobileService/login HTTP/2
+Content-Type: application/json
+User-Agent: SaarVV Android/3.24.2/2022.03/saarvv-live
+
+{
+  "credentials": {
+    "password": "&lt;redacted>",
+    "username": "q@magicalcodewit.ch"
+  }
+}
+            </code></pre>
+        </section>
+        <section>
+            <p>Exciting! A different error!</p>
+            <pre><code data-trim class="language-http" data-line-numbers>
+HTTP/2 400 Bad Request
+Content-Type: application/json
+
+{
+  "message": "Ungültige Signatur"
+}
+            </code></pre>
+        </section>
+        <section>
+            <p>This <code>X-Api-Signature</code> seems suspicious.</p>
+        </section>
+        <section>
+            <h3>JADX to the rescue!</h3>
+            <img src="Bildschirmfoto%202025-05-25%20um%2016.12.17.png" alt="" style="height: 900px">
+        </section>
+        <section>
+            <pre><code data-trim class="language-java" data-line-numbers="1-29|2|3|4|5-21|22">
+public final void b() {
+    HttpURLConnection httpURLConnection = this.d;
+    String d = ic5.d(this.e, nt.b().b());
+    StringBuilder a = u83.a(d, "|");
+    a.append(httpURLConnection.getURL().getHost());
+    a.append("|");
+    a.append(httpURLConnection.getURL().getPort());
+    a.append("|");
+    a.append(httpURLConnection.getURL().getPath());
+    a.append("|");
+    a.append(httpURLConnection.getRequestProperty("X-Eos-Date"));
+    a.append("|");
+    a.append(httpURLConnection.getRequestProperty("Content-Type"));
+    a.append("|");
+    a.append(httpURLConnection.getRequestProperty("Authorization"));
+    a.append("|");
+    a.append(httpURLConnection.getRequestProperty("X-TICKeos-Anonymous"));
+    a.append("|");
+    a.append(httpURLConnection.getRequestProperty("X-EOS-SSO"));
+    a.append("|");
+    a.append(httpURLConnection.getRequestProperty("User-Agent"));
+    httpURLConnection.setRequestProperty("X-Api-Signature", ic5.d(a.toString(), nt.b().b()));
+}
+            </code></pre>
+            <p>(code somewhat simplified)</p>
+        </section>
+        <section>
+            <ol>
+                <li>Get the HTTP request</li>
+                <li>Make <code>d</code> with <code>ic5.d</code> - we need to figure out what this does</li>
+                <li>Create a StringBuilder <code>a</code> - somehow with <code>u83.a</code></li>
+                <li>
+                    Append, seperated by <code>|</code>
+                    <ol>
+                        <li>Host</li>
+                        <li>Port</li>
+                        <li>Path</li>
+                        <li><code>X-Eos-Date</code></li>
+                        <li>Content type</li>
+                        <li>Authorization</li>
+                        <li><code>X-TICKeos-Anonymous</code></li>
+                        <li><code>X-EOS-SSO</code></li>
+                        <li>UA</li>
+                    </ol>
+                </li>
+                <li>Do something again with <code>ic5.d</code></li>
+                <li>Result is the request signature</li>
+            </ol>
+        </section>
+        <section>
+            <h3><code>u83.a</code></h3>
+            <pre><code data-trim class="language-java" data-line-numbers>
+public final class u83 {
+    public static StringBuilder a(String str, String str2) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(str);
+        sb.append(str2);
+        return sb;
+    }
+}
+            </code></pre>
+            <p>
+                Oh, it's just an artefact of decompilation.
+            </p>
+        </section>
+        <section>
+            <pre><code data-trim class="language-java" data-line-numbers>
+public final void b() {
+    HttpURLConnection httpURLConnection = this.d;
+    String d = ic5.d(this.e, nt.b().b());
+    StringBuilder a = new StringBuilder();
+    a.append(d);
+    a.append("|");
+    a.append(httpURLConnection.getURL().getHost());
+    a.append("|");
+    a.append(httpURLConnection.getURL().getPort());
+    a.append("|");
+    a.append(httpURLConnection.getURL().getPath());
+    a.append("|");
+    a.append(httpURLConnection.getRequestProperty("X-Eos-Date"));
+    a.append("|");
+    a.append(httpURLConnection.getRequestProperty("Content-Type"));
+    a.append("|");
+    a.append(httpURLConnection.getRequestProperty("Authorization"));
+    a.append("|");
+    a.append(httpURLConnection.getRequestProperty("X-TICKeos-Anonymous"));
+    a.append("|");
+    a.append(httpURLConnection.getRequestProperty("X-EOS-SSO"));
+    a.append("|");
+    a.append(httpURLConnection.getRequestProperty("User-Agent"));
+    httpURLConnection.setRequestProperty("X-Api-Signature", ic5.d(a.toString(), nt.b().b()));
+}
+            </code></pre>
+        </section>
+        <section>
+            <h3><code>ic5.d</code></h3>
+            <pre><code data-trim class="language-java" data-line-numbers="1-9|2-3|4|5-6|7">
+public static final String d(String str, String str2) {
+    byte[] bytes = str.getBytes("UTF-8");
+    byte[] bytes2 = str2.getBytes("UTF-8");
+    SecretKeySpec secretKeySpec = new SecretKeySpec(bytes2, "HmacSHA512");
+    Mac mac = Mac.getInstance("HmacSHA512");
+    mac.init(secretKeySpec);
+    String a = m91.a(mac.doFinal(bytes));
+    return a;
+}
+            </code></pre>
+            <p>(code somewhat simplified)</p>
+        </section>
+        <section>
+            <h3><code>m91.a</code></h3>
+            <pre><code data-trim class="language-java" data-line-numbers>
+public final class m91 {
+    public static final byte[] a = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102};
+
+    public static String a(byte[] bArr) {
+        byte[] bArr2 = new byte[bArr.length * 2];
+        int i = 0;
+        for (byte b : bArr) {
+            int i2 = b & 255;
+            int i3 = i + 1;
+            byte[] bArr3 = a;
+            bArr2[i] = bArr3[i2 >>> 4];
+            i = i3 + 1;
+            bArr2[i3] = bArr3[i2 & 15];
+        }
+        return new String(bArr2, StandardCharsets.UTF_8);
+    }
+}
+            </code></pre>
+        </section>
+        <section>
+            <p>That's a little confusing. Those numbers look suspicious though.</p>
+            <pre><code data-trim class="language-java fragment" data-line-numbers>
+public static final byte[] a =
+  {  48,   49,   50,   51,   52,   53,   54,   55,   56,   57,   97,   98,   99,  100,  101,  102};
+public static final byte[] a =
+  {0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66};
+public static final byte[] a =
+  { '0',  '1',  '2',  '3',  '4',  '5',  '6',  '7',  '8',  '9',  'a',  'b',  'c',  'd',  'e',  'f'};
+            </code></pre>
+            <p class="fragment">Oh its hex!</p>
+        </section>
+        <section>
+            <p>Lets rewrite that a bit</p>
+            <pre><code data-trim class="language-java" data-line-numbers>
+public static final String hmacSha512Hex(String data, String key) {
+    SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "HmacSHA512");
+    Mac mac = Mac.getInstance("HmacSHA512");
+    mac.init(secretKeySpec);
+    return toHexLowercase(mac.doFinal(data.getBytes("UTF-8")));
+}
+            </code></pre>
+        </section>
+        <section>
+            <p>And now the signature function as well</p>
+            <pre><code data-trim class="language-java" data-line-numbers>
+public final void b() {
+    HttpURLConnection httpURLConnection = this.d;
+    String d = hmacSha512Hex(this.e, nt.b().b());
+    StringBuilder a = new StringBuilder();
+    a.append(d);
+    a.append("|");
+    a.append(httpURLConnection.getURL().getHost());
+    a.append("|");
+    a.append(httpURLConnection.getURL().getPort());
+    a.append("|");
+    a.append(httpURLConnection.getURL().getPath());
+    a.append("|");
+    a.append(httpURLConnection.getRequestProperty("X-Eos-Date"));
+    a.append("|");
+    a.append(httpURLConnection.getRequestProperty("Content-Type"));
+    a.append("|");
+    a.append(httpURLConnection.getRequestProperty("Authorization"));
+    a.append("|");
+    a.append(httpURLConnection.getRequestProperty("X-TICKeos-Anonymous"));
+    a.append("|");
+    a.append(httpURLConnection.getRequestProperty("X-EOS-SSO"));
+    a.append("|");
+    a.append(httpURLConnection.getRequestProperty("User-Agent"));
+    httpURLConnection.setRequestProperty("X-Api-Signature", hmacSha512Hex(a.toString(), nt.b().b()));
+}
+            </code></pre>
+        </section>
+        <section>
+            <h3>The signature so far</h3>
+            <p>
+                \[ \begin{aligned}
+                \text{X-Api-Signature} &amp; := \\
+                &amp;\text{HEX}(\text{HMAC}_{\text{SHA512}}( \\
+                &amp;~~\text{HEX}(\text{HMAC}_{\text{SHA512}}(\text{e}, k_{\text{unknown}}))~| \\
+                &amp;~~\text{URL}_{\text{host}}~|~\text{URL}_{\text{port}}~|~\text{URL}_{\text{path}}~| \\
+                &amp;~~\text{X-Eos-Date}~|~\text{Content-Type}~|~\text{Authorization}~| \\
+                &amp;~~\text{X-TICKeos-Anonymous}~|~\text{X-EOS-SSO}~|~\text{User-Agent}, \\
+                &amp;~~k_{unknown} \\
+                &amp;))
+                \end{aligned} \]
+            </p>
+            <ol>
+                <li>What is <code>e</code>?</li>
+                <li>What is the HMAC key?</li>
+            </ol>
+        </section>
+        <section>
+            <h3><code>this.e</code></h3>
+            <pre><code data-trim class="language-java" data-line-numbers>
+if ((httpURLConnection.getRequestMethod().equals("POST") ||
+      httpURLConnection.getRequestMethod().equals("PUT")) && this.e != null) {
+    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(
+     httpURLConnection.getOutputStream(), StandardCharsets.UTF_8);
+    md6.a(context).H().c();
+    outputStreamWriter.write(this.e);
+    outputStreamWriter.close();
+}
+            </code></pre>
+            <p class="fragment">Ah! <code>e</code> is the request body.</p>
+        </section>
+        <section>
+            <h3><code>nt.b().b()</code></h3>
+            <pre><code data-trim class="language-java" data-line-numbers>
+public final String b() {
+    return this.applicationKey;
+}
+            </code></pre>
+        </section>
+        <section>
+            <img src="Bildschirmfoto%202025-05-25%20um%2017.06.28.png" alt="" style="height: 800px">
+        </section>
+        <section>
+            <pre><code data-trim class="language-java" data-line-numbers>
+public final void R0(String str) {
+    this.applicationKey = str;
+}
+            </code></pre>
+            <p class="fragment">So where is <code>R0</code> called?</p>
+            <p class="fragment">Nowhere useful!</p>
+        </section>
+        <section>
+            <p>We've been looking at <code>nt.b().b()</code>,<br/>maybe <code>nt.b()</code> constructs the value we need?</p>
+        </section>
+        <section>
+            <p>Inside <code>nt</code> we find...</p>
+            <pre><code data-trim class="language-java" data-line-numbers>
+public static void a(Context context) {
+    InputStream openRawResource = context.getResources().openRawResource(R.raw.parsed_licenses);
+    byte[] bArr = new byte[openRawResource.available()];
+    openRawResource.read(bArr);
+    String value3 = "saarvv" + a95.a(context, vd6.f);
+    byte[] value22 = value3.getBytes(mj0.a);
+    String str = new String(nu7.b(bArr, new SecretKeySpec(ic5.c("SHA-512", value22)
+                  .getBytes(StandardCharsets.UTF_8), 0, 16, "AES")), StandardCharsets.UTF_8);
+    Map map2 = (Map) new lh3().h(str, new jt().b());
+    ...
+}
+            </code></pre>
+        </section>
+        <section>
+            <h3>What does this do?</h3>
+            <ol>
+                <li>Open an Android app resource called <code>parsed_licenses</code></li>
+                <li>Construct a value out of "saarvv" and<br/>some unknown value (<code>a95.a(context, vd6.f)</code>)</li>
+                <li>Do some SHA-512 operation on this</li>
+                <li>Do some AES stuff</li>
+                <li>Parse the resulting string into a <code>Map</code> - maybe it's JSON?</li>
+            </ol>
+        </section>
+        <section>
+            <p>That sure looks encrypted to me</p>
+            <img src="Bildschirmfoto%202025-05-25%20um%2017.48.26.png" alt="">
+        </section>
+        <section>
+            <p>What does <code>a95.a</code> do?</p>
+            <pre><code data-trim class="language-java" data-line-numbers="1-29|21-25">
+public final class a95 {
+    public static Context a;
+    public static Boolean b;
+
+    public static final String a(Context context, vd6 key) {
+        String str = key.a;
+        Intrinsics.checkNotNullParameter(context, "context");
+        Intrinsics.checkNotNullParameter(key, "key");
+        String str2 = "";
+        try {
+            ApplicationInfo applicationInfo = context.getPackageManager()
+                .getApplicationInfo(context.getPackageName(), 128);
+            Intrinsics.checkNotNullExpressionValue(applicationInfo, "getApplicationInfo(...)");
+            Bundle bundle = applicationInfo.metaData;
+            String string = bundle.getString(str);
+            if (string != null) {
+                str2 = string;
+            }
+            return ((str2.length() == 0) && key == vd6.d) ? String.valueOf(bundle.getFloat(str)) : str2;
+        } catch (Exception unused) {
+            o86.a(
+              "ManifestMetaDataAccessor",
+              "Missing &lt;meta-data android:name=\"" + str + "\" android:value=\"some_value\"/> "
+              "in your AndroidManifest.xml file."
+            );
+            return "";
+        }
+    }
+}
+            </code></pre>
+        </section>
+        <section>
+            <p>And what about <code>vd6.f</code>?</p>
+            <pre><code data-trim class="language-java" data-line-numbers>
+public final class vd6 {
+    public static final vd6 f;
+
+    static {
+        f = new vd6("COMMIT_HASH", 5, "eos_ms_commit_hash");
+    }
+}
+            </code></pre>
+            <p>(code somewhat simplified)</p>
+        </section>
+        <section>
+            <p>Looking in the manifest...</p>
+            <pre><code data-trim class="language-xml" data-line-numbers>
+&lt;meta-data
+    android:name="eos_ms_commit_hash"
+    android:value="h3f5ba133"/>
+            </code></pre>
+        </section>
+        <section>
+            <h3><code>ic5.c</code></h3>
+            <pre><code data-trim class="language-java" data-line-numbers="1-5|2|3|4">
+public static final String d(String str, byte[] value) {
+    MessageDigest messageDigest = MessageDigest.getInstance(str);
+    messageDigest.update(value);
+    return toHexLowercase(messageDigest.digest());
+}
+            </code></pre>
+            <p>(code somewhat simplified)</p>
+        </section>
+        <section>
+            <h3>Finally, <code>nu7.b</code></h3>
+            <pre><code data-trim class="language-java" data-line-numbers>
+public static byte[] b(byte[] bArr, SecretKeySpec secretKeySpec) {
+    Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+    cipher.init(2, secretKeySpec, new IvParameterSpec(new byte[cipher.getBlockSize()]));
+    return cipher.doFinal(bArr);
+}
+            </code></pre>
+            <p>(code somewhat simplified)</p>
+        </section>
+        <section>
+            <p>
+                \[ \begin{aligned}
+                \text{App-License} &amp; := \\
+                &amp;\text{AES}_{\text{CBC}}(\\
+                &amp;~~data=\text{parsed\_license.lcs}\\
+                &amp;~~key=\text{HEX}(\text{SHA}_{512}(\text{``saarvv"}~|~\text{eos\_ms\_commit\_hash}))[0..16]\\
+                &amp;~~iv=(0~~0~~...~~0)\\
+                &amp;)
+                \end{aligned} \]
+            </p>
+        </section>
+        <section>
+            <h3>Bingo!</h3>
+            <pre><code data-trim class="language-json" data-line-numbers="1-20|10|13-15">
+{
+    "instances": [
+        {
+            "vuIdentifier": "SAARVV",
+            "moticsID": 6484,
+            "appTheme": "eos_ms_ThemeSAARVV",
+            "backendHost": "saarvv.tickeos.de",
+            "productVoucherUrl": "https://saarvv.tickeos.de/gutschein",
+            "timezone": "Europe/Berlin",
+            "applicationKey": "e0737c32-f573-4e23-892f-2f4e0e0bf121",
+            "backendRoute": "/index.php/mobileService/",
+            "vuFullName": "Saarl\u00e4ndischer Verkehrsverbund",
+            "clientName": "SaarVV Android",
+            "mobileServiceAPIVersion": "2022.03",
+            "identifier": "saarvv-live",
+            ...
+        },
+        ...
+    ]
+}
+            </code></pre>
+        </section>
+        <section>
+            <p>Putting it all together</p>
+            <pre><code data-trim class="language-http" data-line-numbers>
+POST https://saarvv.tickeos.de/index.php/mobileService/login HTTP/2
+Content-Type: application/json
+User-Agent: SaarVV Android/3.24.2/2022.03/saarvv-live
+X-Api-Signature: 4a5760b116d...
+X-Eos-Date: Sun, 25 May 2025 13:54:55 GMT
+
+{
+  "credentials": {
+    "password": "&lt;redacted>",
+    "username": "q@magicalcodewit.ch"
+  }
+}
+            </code></pre>
+        </section>
+        <section>
+            <p>It works!</p>
+            <pre><code data-trim class="language-http" data-line-numbers>
+HTTP/2 200 OK
+Content-Type: application/json
+
+{
+  "authorization_types": [
+    {
+      "name": "tickeos_access_token",
+      "type": "header",
+      "header": {
+        "name": "Authorization",
+        "type": "TICKeos",
+        "value": "eyJ0eXAiOiJKV1QiLCJh..."
+      }
+    }
+  ]
+}
+            </code></pre>
+        </section>
+        <section>
+            <h2>Now <em>all</em> we need to do is download tickets</h2>
+        </section>
+        <section>
+            <p>What was the next request the app made?</p>
+            <pre><code data-trim class="language-http" data-line-numbers>
+POST https://saarvv.tickeos.de/index.php/mobileService/sync HTTP/2
+Content-Type: application/json
+User-Agent: SaarVV Android/3.24.2/2022.03/saarvv-live
+X-Api-Signature: edbe5809b123c3...
+X-Eos-Date: Sun, 25 May 2025 13:54:55 GMT
+Authorization: TICKeos eyJ0eXAiOiJKV1QiLCJh...
+
+{}
+            </code></pre>
+        </section>
+        <section>
+            <p>We have a list of tickets,<br/>how do we get the ticket itself?</p>
+            <pre><code data-trim class="language-http" data-line-numbers>
+HTTP/2 200 OK
+Content-Type: application/json
+
+{
+  "tickets": [
+    "eet-0671615f49990e9e3eee4b949ce74606eaed4633",
+    "shop-25048405",
+    "shop-250311353"
+  ],
+  "credits": []
+}
+            </code></pre>
+        </section>
+        <section>
+            <pre><code data-trim class="language-http" data-line-numbers>
+POST https://saarvv.tickeos.de/index.php/mobileService/ticket HTTP/2
+Content-Type: application/json
+User-Agent: SaarVV Android/3.24.2/2022.03/saarvv-live
+X-Api-Signature: 7d0e1262365945...
+X-Eos-Date: Sun, 25 May 2025 13:54:55 GMT
+Authorization: TICKeos eyJ0eXAiOiJKV1QiLCJh...
+
+{
+  "tickets": [
+    "eet-0671615f49990e9e3eee4b949ce74606eaed4633",
+  ],
+  "details": true
+}
+            </code></pre>
+        </section>
+        <section>
+            <p>Where's the ticket barcode?</p>
+            <pre><code data-trim class="language-http" data-line-numbers>
+HTTP/2 200 OK
+Content-Type: application/json
+
+{
+  "tickets": {
+    "eet-0671615f49990e9e3eee4b949ce74606eaed4633": {
+      "meta": "{\"purchase_id\":\"eet-0671615f49990e9e3eee4b949ce74606eaed4633\",\"title\":\"Deutschland-Ticket\",...",
+      "template": "'{\"purchase_id\":\"eet-0671615f49990e9e3eee4b949ce74606eaed4633\",\"content\":{\"header\":...",
+      "certificate": "-----BEGIN CERTIFICATE-----\nMII...",
+      "meta_signature": "aee26f694b3f9e414226092736df911bee6de...",
+      "template_signature": "49978adad203c507a12c4550bc1d7613ddff8c0d..."
+    }
+  }
+}
+            </code></pre>
+        </section>
+        <section>
+            <p>Is it in <code>meta</code>? No</p>
+            <pre><code data-trim class="language-json" data-line-numbers>
+{
+  "purchase_id": "eet-0671615f49990e9e3eee4b949ce74606eaed4633",
+  "title": "Deutschland-Ticket",
+  "description": "Deutschland-Ticket",
+  "anonymous": false,
+  "customer_code": "",
+  "vu_name": null,
+  "vu_role": null,
+  "validity_begin": "2025-05-01 00:00:00",
+  "validity_end": "2025-06-01 03:00:00",
+  "display_valid_end": "2025-06-01 03:00:00",
+  "display_ticket_template_end": "2025-06-01 03:00:00",
+  "purchase_datetime": "2025-05-01 00:00:00",
+  "distribution_method": "external_entitlement",
+  "price": null,
+  "vat": null,
+  "currency": null,
+  "master_type": null,
+  "device_identifier": null
+}
+            </code></pre>
+        </section>
+        <section>
+            <p>It's in template</p>
+            <pre><code data-trim class="language-json" data-line-numbers>
+{
+  "purchase_id": "eet-0671615f49990e9e3eee4b949ce74606eaed4633",
+  "content": {
+    "header": {
+      "title_color": "FFFFFF",
+      "description_color": "FFFFFF",
+      "security_method": "analog_clock",
+      ...
+    },
+    "images": {
+      "background": "iVBORw0KGgo...",
+      "logo": "iVBORw0KGgo...",
+      "aztec_barcode": "iVBORw0KGgo..."
+    },
+    "styles": {
+      "global": "body, p, table, tr, td {..."
+    },
+    "pages": ["&lt;!doctype html>&lt;html>&lt;head>&lt;meta..."]
+  }
+}
+            </code></pre>
+        </section>
+        <section>
+            <p>If we take that <code>aztec_barcode</code> value<br/>and put it as <code>data:image/png;base64,...</code>, we get:</p>
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALYAAAC2AQMAAABOPuVHAAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAFJ0lEQVRYhZWXwWptPQiFA5kGfBXBqeCrBzIN+CpCpoL/2v3v8HqhPYW23+nZe0eXSx3FdfyUn5mkx+de7EY5Ov7S9PKLN67tU6/Gsji35R5xSGw+WjftOdci+wcnrqAQ25SZRo9zWZ1ouabuc9mJdOd2mpTkuE7H9/dYwWW0OfcVPffdky0XnD/OWarsTneW42/tea40x4XsLLvnypn4abflPichBruIN1HtVDzBy5aHMmKwI4vxwFt1knJyy3O/WQjFebJDbZ2DmAxtuePj4eNFciDEeR5X0m05pZ1z6lzkkyXvsjFzZsvlr1/ccmX25LcqctaMBQ1upp7vE8+KPhnmqXrQr4qNls+qMe3seehGrY0TXuHbcrLKC52cd6DDwltW+p234RzrrLoU0KLM2vXF2nuee0bZZdkeBJGNlbqUe65FFbZSUKrzQDT3pmrLfbhIBoKnr95IehuPuVu+0lE0PA6Kc7sceQWxR8t5c5CPvPPZsmkxtlTdlp9ihLbmvJNOyCkLz9otX5XIWlTMl9dKjEpUbsvJY685d8qYvvIcozHH6DmuhPuybskZXicv44QtT16QE+/LTEZyddcapi3/rf5xKzJ+uCXEd/xeRhyQx44fCRUcfdH4zOh9jzIjWj4S4kYG351rbVjTZ2bwmY4LZOVvpshg3qgohKWk5/vZfYEymndcfLPAd7LnhKoerH/q59mkbRzacvdYDAeYcNQw39f4KvLY8dqo6qf52JHKq3M6ZLhbnnt5weEfutqIN1FUq77gNTyqNIbbsaryVZQo2ez5gYm6v42aG1Oeq9rAwVq+cAE/pFesHj2BuhTW03KZjrRtpPDTWA2J6w912vEnxThQJX4RQs3KeJdWy3elw/Mukj1lzYVG4eieLf+t/uHRhCAsPrhOLn8rFp3dckgqJnxYDM95XrKVvdvzGnrJYB3oHVI+4eHwMe05fAa29a4hzn55Bdqh9hxzzkUrWSHIo8XaYRc9q+XDP9fbAseDTry+cJfsljMKYWDGQfP7uvdm8/VQpx1PQaN0z8Q0UUvUmHTqbjkc1WPOuSJpBZ11DXnMlj95GMq8mKYW9GhQ1YKxdtwEzpL1DWxLPT/TnOy75Th11EtMIddkjW/yEXTcnqPV+z0D3eQqPHm/fZf2/Ast5iLVs2Cu+t6gSuk5Gv95kydOhfDRsVdu3vPf6h+viwwe01hwpl2MKkccOo6sh8REZ2BmFNzCJAZttlwwp6GM1oIhqBZ83s6QniPxInsH+rKaOI6FuedrnA2/G53KxhIMyzVgrmgTuXpe6DyoCQwWGGjRxwEg2+y50L0bS8S3p2BgwSFdredwdeTuG0wJrZ+/qkNziZYPosnYgwrzgsExlhqMcrf8a37QNh41QmnGe1feGS3HSDMDVVffrHIAi+ZZPccaYXAa+fqhxfuGAEy12fKza1oyCnQ6FiD6KRDct+OEiQibg2Aewusw1psHsbS8UDu20K+ifAw0TiOvr74a/lv9+8TnEAv4jH9zCK4zpbLlTMXz6+Uw2KKTmlgv/8GF7PMVAv+68tXyW6Q9H4jBQTCKvs3GzjwlkEnHsajStzn9xFjSv5weuFPHMd0HJjQMRz//pLHTvrmr45Rzb+WJ/QcWHBPZhy615ejLBjfC2XF7f1jSHNtZz3ljFcAOBDWdyMA6ZHuj7jr+cwrD6I5JR8Uhdwy+8KWO15HLhlHz/Q8ylb49qOPL4erofIEUbv12aimz3XK0/fPzeYeDLIV0serPlv8HPrNoyR8pJuIAAAAASUVORK5CYII=" alt="" style="height: 400px">
+        </section>
+        <section>
+            <h2>S-Bahn Berlin</h2>
+            <p>That looks suspiciously similar to SaarVV</p>
+            <img src="Bildschirmfoto%202025-05-25%20um%2019.03.32.png" alt="" style="height: 800px">
+        </section>
+        <section>
+            <p>Or not...<br/>Let's keep going though</p>
+            <img src="Bildschirmfoto%202025-05-25%20um%2019.06.30.png" alt="" style="height: 800px">
+        </section>
+        <section>
+            <p>It is <em>almost</em> the same</p>
+            <p>Where did that <code>code</code> come from, and where's my username?</p>
+            <pre><code data-trim class="language-http" data-line-numbers>
+POST https://sbahn-ber.tickeos.de/index.php/mobileService/connect/authorize HTTP/2
+Content-Type: application/json
+User-Agent: S-Bahn Berlin AND - Live/3.30.0/2022.03/sbahn-berlin-live
+X-Api-Signature: 6e0845008e5eb...
+X-Eos-Date: Sun, 25 May 2025 17:07:07 GMT
+
+{
+  "id": "1",
+  "code": "b0862a41-5d34-..."
+}
+            </code></pre>
+        </section>
+        <section>
+            <p>It turns out, this is a Webview to Keycloak performing OIDC.</p>
+            <img src="Bildschirmfoto%202025-05-25%20um%2019.06.30.png" alt="" style="height: 800px">
+        </section>
+        <section>
+            <p>After going through the OAuth dance with keycloak,<br/>we send the response code to the API.</p>
+            <p>
+                We can then call<br/>
+                <code>https://sbahn-ber.tickeos.de/index.php/mobileService/sync</code><br/>
+                exactly as we did with SaarVV;<br/>
+                modulo extracting the new license file from the APK.
+            </p>
+        </section>
+        <section>
+            <h1>OAuth hates the living</h1>
+            <h2>Deutsche Bahn done goofed</h2>
+        </section>
+        <section>
+            <img src="Bildschirmfoto%202025-06-16%20um%2015.34.05.png" alt="" style="height: 800px">
+            <img src="Bildschirmfoto%202025-06-16%20um%2015.23.37.png" alt="" style="height: 800px">
+        </section>
+        <section>
+            <code>
+                <span class="fragment semi-fade-out" data-fragment-index="1">
+                    https://accounts.bahn.de/auth/realms/db/protocol/openid-connect/auth?<br/>
+                    response_type=code&client_id=kf_mobile&<br/>
+                    state=dbnav-6e6NmFBosk&code_challenge=2w1Nfr...&<br/>
+                    code_challenge_method=S256&prompt=login&scope=offline_access&<br/>
+                </span>
+                redirect_uri=dbnav%3A%2F%2Fdbnavigator.bahn.de%2Flogin%2Fsuccess&<br/>
+                <span class="fragment semi-fade-out" data-fragment-index="1">
+                    cancel_uri=dbnav%3A%2F%2Fdbnavigator.bahn.de%2Flogin%2Fback&<br/>
+                    corid=f97a5347-535e-479e-a8b5-5fbea22ff4ea_83a4ee42-3a00-4741-8d17-1d04ffca8528
+                </span>
+            </code>
+        </section>
+        <section>
+            <p style="font-size: 65px">A lot of apps use <code>myapp://</code> as an OIDC redirect</p>
+        </section>
+        <section>
+            <p>This can backfire...</p>
+            <blockquote>
+                <p>
+                    A limitation of using private-use URI schemes for redirect URIs is
+                    that multiple apps can typically register the same scheme, which
+                    makes it indeterminate as to which app will receive the authorization
+                    code.  Section 1 of PKCE [RFC7636] details how this limitation can be
+                    used to execute a <span class="fragment highlight-red">code interception attack</span>.
+                </p>
+            </blockquote>
+            <p>— <cite>BCP 212 - RFC 8252 "OAuth 2.0 for Native Apps"</cite></p>
+        </section>
+        <section>
+            <p style="font-size: 65px">If we have the OAuth authorization code,<br/>we have the login</p>
+        </section>
+        <section>
+            <p>
+                <code>accounts.bahn.de</code> uses a redirect URL of<br/>
+                <code>dbnav://dbnavigator.bahn.de/auth</code><br/>
+                for the DB Navigator app, and<br/>
+                <code>bahnbonus://authentication/redirect</code><br/>
+                for the BahnBonus app.
+            </p>
+        </section>
+        <section>
+            <h3>I becometh <code>dbnav://</code>, destroyer of security</h3>
+            <p>Nothing stops us telling the Operating System I we handle <code>dbnav://</code> urls</p>
+            <pre><code data-trim class="language-xml" data-line-numbers>
+&lt;?xml version="1.0" encoding="UTF-8"?>
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+&lt;plist>
+&lt;dict>
+    ...
+    &lt;key>CFBundleURLTypes&lt;/key>
+    &lt;array>
+        &lt;dict>
+            &lt;key>CFBundleURLName&lt;/key>
+            &lt;string>DB Navigator&lt;/string>
+            &lt;key>CFBundleURLSchemes&lt;/key>
+            &lt;array>
+                &lt;string>dbnav&lt;/tring>
+            &lt;/array>
+        &lt;/dict>
+    &lt;/array>
+&lt;/dict>
+&lt;/plist>
+            </code></pre>
+        </section>
+        <section>
+            <p>
+                With this, I redirect to my web app with the original URL in a parameter.<br/>
+                Security: broken.
+            </p>
+            <p>
+                <img src="github-mark-white.svg" alt=""
+                     style="height: 50px; vertical-align: middle;margin-right: 10px;">
+                TheEnbyperor / db-login-hook
+            </p>
+        </section>
+        <section>
+            <h2>I want my trackingless tickets</h2>
+            <p style="font-size: 60px">
+                Head to <a href="https://xn--zgli-0ra.app">zügli.app</a>
+            </p>
+
+            <p>
+                <img src="github-mark-white.svg" alt=""
+                     style="height: 50px; vertical-align: middle;margin-right: 10px;">
+                TheEnbyperor / zuegli
+            </p>
+        </section>
+        <section>
+            <h2>Questions?</h2>
+            <p>
+                Email: q@magicalcodewit.ch<br/>
+                Fedi: q@glauca.space
+            </p>
+            <p>
+                Slides at <a href="https://magicalcodewit.ch/gpn23-slides/">magicalcodewit.ch/gpn23-slides/</a>
+            </p>
+        </section>
+    </div>
+    <script src="/reveal-js/reveal.js"></script>
+    <script src="/reveal-js/notes/notes.js"></script>
+    <script src="/reveal-js/markdown/markdown.js"></script>
+    <script src="/reveal-js/highlight/highlight.js"></script>
+    <script src="/reveal-js/math/math.js"></script>
+    <script>
+        Reveal.initialize({
+            width: 1920,
+            height: 1080,
+            margin: 0.04,
+            hash: true,
+            plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX]
+        });
+    </script>
+</body>
+</html>

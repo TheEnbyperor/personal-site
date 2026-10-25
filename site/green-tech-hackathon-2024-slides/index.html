@@ -1,0 +1,241 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Big Green Packets with BGP</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/reveal-js/reset.css">
+    <link rel="stylesheet" href="/reveal-js/reveal.css">
+    <link rel="stylesheet" href="/reveal-js/theme/white.css">
+    <link rel="stylesheet" href="/reveal-js/highlight/monokai.css">
+    <link rel="stylesheet" href="/slides-personal.css">
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h2>BGP<sup>2</sup></h2>
+            <h3>Big Green Packets with BGP</h3>
+            <h4>Asbjørn, Q, Toke</h4>
+            <p>RIPE Green Tech Hackathon 2024</p>
+        </section>
+        <section>
+            <h2>What are jumbo frames?</h2>
+            <ul>
+                <li>Ethernet is <em>usually</em> 1,5k bytes</li>
+                <li>We can go bigger!</li>
+                <li>Usually MTUs up to 9,0k</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Why bigger packets?</h2>
+            <ul>
+                <li>Efficiency!</li>
+                <li>Less forwarding overhead</li>
+                <li>Green Internet</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Jumbo frames on IXPs</h2>
+            <ul>
+                <li>Traditionally required a flag day</li>
+                <li>What if we can deploy this incrementally?</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Support for this</h2>
+            <p>
+                There are 124 Internet exchanges with 9K MTU they are spread
+                out over 508 datacenters in 245 cities across 61 countries
+                (source: PeeringDB).
+            </p>
+            <p>
+                There are currently 3024 ASN's connected to the 124 high MTU internet exchanges.
+            </p>
+        </section>
+        <section>
+            <pre><code data-trim class="hljs language-plain" style="font-size: 21px">
+              asn   |               name                | 9k_mtu_ix_cnt
+            --------+-----------------------------------+---------------
+               6939 | Hurricane Electric                |            46
+              13335 | Cloudflare                        |            42
+                 42 | PCH AS42                          |            34
+               3856 | PCH AS3856                        |            33
+              32934 | Meta                              |            28
+              15169 | Google LLC                        |            27
+              20940 | Akamai Technologies               |            20
+                112 | DNS-OARC-112                      |            20
+              16509 | Amazon.com                        |            19
+               8075 | Microsoft                         |            19
+             199524 | G-Core Labs                       |            18
+              26415 | VeriSign Global Registry Services |            14
+               8674 | Netnod                            |            13
+              54113 | Fastly, Inc.                      |            12
+              48648 | K-Link AS48648                    |            11
+               3303 | Swisscom                          |            11
+              32590 | Valve Corporation                 |            11
+             212232 | BGP.Tools Route Collector         |            11
+              54994 | meteversecloud                    |            10
+               6768 | EUROTELE-PLUS                     |            10
+            </code></pre>
+        </section>
+        <section>
+            <img src="mtu_internet.svg" alt="" style="width: 80%">
+        </section>
+        <section>
+            <h2>What did we do?</h2>
+            <ul>
+                <li>Start on an I-D for MTU signalling in BGP</li>
+                <li>Implement this in BIRD</li>
+                <li>Start of Babel implementation in BIRD</li>
+            </ul>
+        </section>
+        <section>
+            <h2>New BGP capability</h2>
+            <pre><code data-trim class="hljs language-plain">
+                0                   1
+                0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+               |fl.|          Link MTU         |
+               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            </code></pre>
+            <p>Flags are reserved for future use and MUST be 0</p>
+        </section>
+        <section>
+            <h2>New BGP attribute</h2>
+            <p>Type flags: optional, non-transitive, complete</p>
+            <pre><code data-trim class="hljs language-plain" style="font-size: 21px">
+                0                   1                   2                   3
+                0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+               |                         Origin ASN                            |
+               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+               |fl.|          Path MTU         |
+               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+            </code></pre>
+            <p>Flags are reserved for future use and MUST be 0</p>
+        </section>
+        <section>
+            <h2>Code in action</h2>
+        </section>
+        <section>
+            <pre><code data-trim class="hljs language-plain">
+              BGP state:          Established
+                Neighbor address: 10.211.55.6
+                Neighbor AS:      65000
+                Local AS:         65001
+                Neighbor ID:      10.211.55.6
+                Local capabilities
+                  Multiprotocol
+                    AF announced: ipv4
+                  Route refresh
+                  Graceful restart
+                  4-octet AS numbers
+                  Enhanced refresh
+                  Long-lived graceful restart
+                  MTU: 9000
+                Neighbor capabilities
+                  Multiprotocol
+                    AF announced: ipv4
+                  Route refresh
+                  Graceful restart
+                  4-octet AS numbers
+                  Enhanced refresh
+                  Long-lived graceful restart
+                  MTU: 9000
+            </code></pre>
+        </section>
+        <section>
+            <pre><code data-trim class="hljs language-plain">
+                2: enp0s5: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 9000 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
+                    link/ether 00:1c:42:7a:0e:27 brd ff:ff:ff:ff:ff:ff
+
+                44.31.105.50 via 10.211.55.1 dev enp0s5 mtu 1500
+                44.31.105.51 via 10.211.55.1 dev enp0s5
+            </code></pre>
+        </section>
+        <section>
+            <h3>AS #1</h3>
+            <pre><code data-trim class="hljs language-plain">
+                # birdc s r all
+                BIRD v2.16-5-gcfac0076-x ready.
+                Table master4:
+                44.31.105.51/32      unicast [kernel1 12:58:20.071] * (10)
+                    via 10.211.55.1 on enp0s5
+                    Type: inherit univ
+                    Kernel.source: 3
+                    Kernel.metric: 0
+                    Kernel.mtu: 9000
+                44.31.105.50/32      unicast [kernel1 14:10:59.532] * (10)
+                    via 10.211.55.1 on enp0s5
+                    Type: inherit univ
+                    Kernel.source: 3
+                    Kernel.metric: 0
+                    Kernel.mtu: 1500
+            </code></pre>
+        </section>
+        <section>
+            <h3>AS #2</h3>
+            <pre><code data-trim class="hljs language-plain">
+                # birdc s r all
+                BIRD v2.16-5-gcfac0076-x ready.
+                Table master4:
+                44.31.105.51/32      unicast [peer 13:31:41.451 from 10.211.55.6] * (100) [AS65000i MTU 9000]
+                    via 10.211.55.1 on enp0s5
+                    Type: BGP univ
+                    BGP.origin: IGP
+                    BGP.as_path: 65000
+                    BGP.next_hop: 10.211.55.1
+                    BGP.local_pref: 100
+                    BGP.mtu: 9000 (origin AS65000)
+                44.31.105.50/32      unicast [peer 14:10:59.521 from 10.211.55.6] * (100) [AS65000i MTU 1500]
+                    via 10.211.55.1 on enp0s5
+                    Type: BGP univ
+                    BGP.origin: IGP
+                    BGP.as_path: 65000
+                    BGP.next_hop: 10.211.55.1
+                    BGP.local_pref: 100
+                    BGP.mtu: 1500 (origin AS65000)
+            </code></pre>
+        </section>
+         <section>
+            <p>
+                <img src="github-mark-white.svg" alt=""
+                     style="height: 50px; vertical-align: middle;margin-right: 10px;">
+                TheEnbyperor / bird
+            </p>
+        </section>
+        <section>
+            <h2>TODO</h2>
+            <ul>
+                <li>Finish writing the I-D</li>
+                <li>Implement places other than Bird</li>
+                <li>???</li>
+                <li>Profit!</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Thank you! Questions?</h2>
+            <p>
+                Slides at <a href="https://magicalcodewit.ch/green-tech-hackathon-2024-slides/">magicalcodewit.ch/green-tech-hackathon-2024-slides/</a>
+            </p>
+        </section>
+    </div>
+    <script src="/reveal-js/reveal.js"></script>
+    <script src="/reveal-js/notes/notes.js"></script>
+    <script src="/reveal-js/markdown/markdown.js"></script>
+    <script src="/reveal-js/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+        });
+    </script>
+</body>
+</html>

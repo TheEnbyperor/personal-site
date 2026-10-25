@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>All Cars Are Broadcasting &mdash; Die Public-Key-Infrastruktur der (Daten)Autobahnen</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/reveal-js/reset.css">
+    <link rel="stylesheet" href="/reveal-js/reveal.css">
+    <link rel="stylesheet" href="/reveal-js/theme/white.css">
+    <link rel="stylesheet" href="/reveal-js/highlight/monokai.css">
+    <link rel="stylesheet" href="/slides-personal.css">
+
+    <style>
+        blockquote::after {
+            display: none;
+        }
+    </style>
+</head>
+<body id="reveal">
+<div class="reveal">
+    <div class="slides" style="text-align: left">
+        <section>
+            <h1>All Cars Are Broadcasting</h1>
+            <h2>Die Public-Key-Infrastruktur der (Daten)Autobahnen</h2>
+            <h3>Q Misell</h3>
+            <p>Die Heilbronner Chaos Party 2026</p>
+            <p>30<sup>th</sup> of October 2026</p>
+        </section>
+        <section>
+            <div class="columns" style="grid-template-columns: 2fr 1fr">
+                <div>
+                    <h1>Coöperative Intelligent Transport Systems (C-ITS)</h1>
+                    <ul>
+                        <li>Hello I (the car) exist!</li>
+                        <li>Speed</li>
+                        <li>Location</li>
+                        <li>Intentions</li>
+                    </ul>
+                </div>
+                <img src="opentrafficmap.png" alt="">
+            </div>
+        </section>
+        <section>
+            <div class="columns" style="grid-template-columns: 2fr 1fr">
+                <div>
+                    <h2>Environmental Notifications</h2>
+                    <ul>
+                        <li>Lane closures</li>
+                        <li>Upcoming hazards</li>
+                        <li>Emergency vehicles coming from behind</li>
+                        <li>Animals on the street</li>
+                    </ul>
+                    <img src="baustelle-voraus.webp" alt="">
+                </div>
+                <img src="denm.png" alt="">
+            </div>
+        </section>
+        <section>
+            <h2>Traffic Light Information</h2>
+            <img src="spatem.png" alt="" style="height: 750px">
+        </section>
+        <section>
+            <h2>How does this all work?</h2>
+            <ul>
+                <li>ITS-G5 / 802.11p</li>
+                <li>aka Wi-Fi without association</li>
+                <li>aka yelling Wi-Fi frames into the void</li>
+                <li>a simple ESP32 can send these</li>
+            </ul>
+        </section>
+        <section>
+            <h2>So who do we trust?</h2>
+            <ul>
+                <li><em>Just</em> yelling into the void isn't secure</li>
+                <li>People can lie (shocker!)</li>
+                <li>
+                    Protect against:
+                    <ul>
+                        <li>Fake hazards</li>
+                        <li>Fake speed limits</li>
+                        <li>Fake green lights</li>
+                    </ul>
+                </li>
+                <li>User privacy?</li>
+            </ul>
+        </section>
+        <section>
+            <h2>The solution?</h2>
+            <h1>✨ PKI ✨</h1>
+            <h3>(Public-Key Infrastructure)</h3>
+            <p><del>this time we try not use a private key of 4</del></p>
+        </section>
+        <section>
+            <h2>Don't we have enough PKIs to go round?</h2>
+            <h3>PKIs will continue until morale improves</h3>
+        </section>
+        <section>
+            <h2>The PKI everyone knows and loathes - WebPKI</h2>
+            <ul>
+                <li>Puts the 🔒 in your browser</li>
+                <li>X.509 certificates</li>
+                <li>"I am <code>example.com</code>, signed, a CA"</li>
+            </ul>
+        </section>
+        <section>
+            <h2>C-ITS certificates</h2>
+            <pre style="font-size: 30px"><code class="no-highlight" data-trim data-noescape>
+version 3
+type explicit
+issuer sha256AndDigest: <span style="color: lightblue">1a2b3c4d5e6f7081</span>
+toBeSigned {
+  id <span style="color: red">none</span>
+  validityPeriod { start <span style="color: orange">2026-10-30</span>, duration hours: <span style="color: orange">168</span> }
+  region identifiedRegion: { countryOnly <span style="color: lightgreen">276</span> }
+  appPermissions {
+    { psid <span style="color: magenta">36</span>, ssp bitmapSsp <span style="color: magenta">01 FF FC</span> },
+    { psid <span style="color: magenta">37</span>, ssp bitmapSsp <span style="color: magenta">01 FF FF FF</span> }
+  }
+  verifyKeyIndicator verificationKey: ecdsaNistP256 { ... }
+}
+signature ecdsaNistP256Signature { ... }
+            </code></pre>
+        </section>
+        <section>
+            <h3>The EU copied the US's homework</h3>
+            <ul>
+                <li>American standard: IEEE 1609.2 - Wireless Access in Vehicular Environments</li>
+                <li>Europe <del>stole</del>borrowed it, with modifications</li>
+                <li>Compact ASN.1 OER encoding</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Why not just use X.509?</h2>
+            <ul>
+                <li>
+                    Size
+                    <ul>
+                        <li>A CAM is a few hundred bytes, sent up to 10 times a second</li>
+                        <li>An X.509 certificate is easily over a kilobyte</li>
+                    </ul>
+                </li>
+                <li>
+                    Privacy
+                    <ul>
+                        <li>A certificate with your name in it is a tracking beacon</li>
+                    </ul>
+                </li>
+                <li>
+                    Wrong question
+                    <ul>
+                        <li>X.509 answers "who are you?"</li>
+                        <li>A car needs to know "are you allowed to say this?"</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Signing every message</h2>
+            <ul>
+                <li>Every single message is signed (ECDSA)</li>
+                <li>Normally only the 8-byte certificate digest is attached</li>
+                <li>Full certificate about once a second</li>
+                <li>Or when someone asks: "who's this <code>1a2b3c4d…</code>?"</li>
+                <li>Receivers cache certificates they've seen</li>
+                <li><b>But how do we know the certificates are trustworthy?</b></li>
+            </ul>
+        </section>
+        <section>
+            <h2>The hierarchy</h2>
+            <svg viewBox="0 0 1600 700" style="width: 1600px; height: 700px" font-family="Montserrat, sans-serif"
+                 font-size="34" fill="white" text-anchor="middle">
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8"
+                            orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="white"/>
+                    </marker>
+                </defs>
+                <g stroke="white" stroke-width="3" fill="none">
+                    <rect x="350" y="10" width="900" height="100" rx="12"/>
+                    <rect x="200" y="200" width="400" height="100" rx="12"/>
+                    <rect x="1000" y="200" width="400" height="100" rx="12"/>
+                    <rect x="100" y="400" width="500" height="100" rx="12"/>
+                    <rect x="1000" y="400" width="500" height="100" rx="12"/>
+                    <rect x="100" y="590" width="500" height="100" rx="12"/>
+                    <rect x="1000" y="590" width="500" height="100" rx="12"/>
+                    <line x1="700" y1="110" x2="450" y2="200" marker-end="url(#arrow)"/>
+                    <line x1="900" y1="110" x2="1150" y2="200" marker-end="url(#arrow)"/>
+                    <line x1="400" y1="300" x2="350" y2="400" marker-end="url(#arrow)"/>
+                    <line x1="500" y1="300" x2="1150" y2="400" marker-end="url(#arrow)"/>
+                    <line x1="350" y1="500" x2="350" y2="590" marker-end="url(#arrow)"/>
+                    <line x1="1250" y1="500" x2="1250" y2="590" marker-end="url(#arrow)"/>
+                </g>
+                <text x="800" y="72">European Certificate Trust List - Run by the EU</text>
+                <text x="400" y="262">Root CA</text>
+                <text x="1200" y="262">Root CA</text>
+                <text x="350" y="462">Enrolment Authority</text>
+                <text x="1250" y="462">Authorization Authority</text>
+                <text x="350" y="652">Enrolment Credential</text>
+                <text x="1250" y="652">Authorization Tickets</text>
+            </svg>
+        </section>
+        <section>
+            <h2>The two kinds of certificates</h2>
+            <div class="columns">
+                <div>
+                    <h3>Enrollment Credential</h3>
+                    <ul>
+                        <li>Identifies the car</li>
+                <li>Long-lived, not privacy preserving</li>
+                <li>These are never sent openly</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Authorization Ticket</h3>
+                    <ul>
+                        <li>Messages are signed with these</li>
+                        <li>Anyone can see these</li>
+                        <li>Short-lived, no identifying information</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section>
+            <h2>Anonymisation</h2>
+            <ul>
+                <li>Cars receive batches of valid ATs</li>
+                <li>Swap AT (and MAC address) regularly</li>
+                <li>In theory: you can't follow a car through town</li>
+                <li>In practice: a car that's in the same place doing<br/>the same speed is probably the same car</li>
+                <li>Volkswagen also forgets to reset their packet sequence numbers</li>
+            </ul>
+        </section>
+        <section>
+            <h1>So how does it work in practice?</h1>
+            <h2>Hint: eeeeh it could be worse</h2>
+        </section>
+        <section>
+            <h2>Regional Validity</h2>
+            <ul>
+                <li>In theory a certificate can be restricted to geographic regions</li>
+                <li>
+                    Examples:
+                    <ul>
+                        <li>A circle</li>
+                        <li>A polygon</li>
+                        <li>A country</li>
+                        <li>A region of a country</li>
+                    </ul>
+                </li>
+                <li>In practice, nobody implements this</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Public Keys</h2>
+            <p>In spite of ostensibly being compact, one can be very verbose with keys</p>
+            <pre style="font-size: 30px"><code class="no-highlight" data-trim data-noescape>
+                EccP256CurvePoint ::= CHOICE {
+                  x-only           OCTET STRING (SIZE (32)),
+                  fill             NULL,
+                  compressed-y-0   OCTET STRING (SIZE (32)),
+                  compressed-y-1   OCTET STRING (SIZE (32)),
+                  uncompressedP256 SEQUENCE {
+                    x OCTET STRING (SIZE (32)),
+                    y OCTET STRING (SIZE (32))
+                  }
+                }
+            </code></pre>
+        </section>
+        <section>
+            <h2>Signatures</h2>
+            <p>These are just <em>wild</em></p>
+            <pre style="font-size: 30px"><code class="no-highlight" data-trim data-noescape>
+                EcdsaP256Signature ::= SEQUENCE {
+                  rSig EccP256CurvePoint,
+                  sSig OCTET STRING (SIZE (32))
+                }
+            </code></pre>
+            <ul>
+                <li>An ECDSA signature is two integers</li>
+                <li>For some reason they decided to let you represent r<br/>as either an integer (<code>x-only</code>) or a compressed/uncompressed point R</li>
+                <li>The official reason: "to allow for fast verification"</li>
+                <li>Almost no library implements this</li>
+                <li>In practice one must compute <code>r = R.x mod n</code> <em>for every signature verification</em></li>
+            </ul>
+        </section>
+        <section>
+            <h2>Not all trust lists are equal</h2>
+            <div class="columns">
+                <div>
+                    <h3>L1 / L2: Production</h3>
+                    <ul>
+                        <li>Audited Root CAs</li>
+                        <li>What real cars on<br/>real roads should trust</li>
+                    </ul>
+                </div>
+                <div>
+                    <h2>L0: Testing</h2>
+                    <ul>
+                        <li>Root CAs are not audited</li>
+                        <li>"Experiments and deviations"<br/>from the standards allowed</li>
+                        <li>For test and integration purposes only</li>
+                        <li><b>In reality:</b> heavily used in production</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section>
+            <h2>Certificate trust in reality</h2>
+            <ul>
+                <li>Slovenian Motorways (DARS): L0</li>
+                <li>Graz: L0</li>
+                <li>Heilbronn: L0</li>
+                <li>Vienna: Unsigned</li>
+                <li>Ulm: Unsigned</li>
+                <li>Bern: Unsigned</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Meanwhile, on the L0 trust list...</h2>
+            <ul>
+                <li>Checked every Root CA's Distribution Centre</li>
+                <li><b>15 Root CAs</b> had DCs that were misconfigured or entirely offline</li>
+                <li>Asked the EU what they think of this</li>
+            </ul>
+        </section>
+        <section>
+            <h2>The EU's answer</h2>
+            <blockquote>
+                <p>strictly only intended for testing purposes of C-ITS Services</p>
+            </blockquote>
+            <p>i.e. leaving things in a broken state is A-OK</p>
+        </section>
+        <section>
+            <h1>Let's become a Root CA!</h1>
+            <h2>How hard can it be?</h2>
+        </section>
+        <section>
+            <h2>Step one</h2>
+            <h3>Implement this weird certificate format</h3>
+            <p>It isn't X.509, so <code>openssl</code> won't cut it here</p>
+        </section>
+        <section>
+            <h2>Step two</h2>
+            <h3>Email the Root CA Certificate to the EU</h3>
+        </section>
+        <section>
+            <h2>Step three...</h2>
+            <h3>Oh, wait we're done!</h3>
+            <p>For L0 the EU just check the certificate is technically valid</p>
+            <ul>
+                <li>No audit</li>
+                <li>No checking intent</li>
+                <li>No key security</li>
+                <li>No Certificate Practice Statement</li>
+            </ul>
+            <p>Anyone can do it!</p>
+        </section>
+        <section>
+            <h2>How can I have a Root CA?</h2>
+            <p>
+                <img src="github-mark-white.svg" alt=""
+                     style="height: 50px; vertical-align: middle;margin-right: 10px;">
+                TheEnbyperor / c-its
+            </p>
+            <ul>
+                <li>Implementation of the C-ITS security architecture</li>
+                <li>All the code needed to generate various kinds of certs</li>
+            </ul>
+        </section>
+        <section>
+            <h1>Question time!</h1>
+            <p>
+                Email: q@magicalcodewit.ch<br/>
+                Fedi: @q@glauca.space
+            </p>
+            <p>
+                Slides at <a href="https://magicalcodewit.ch/dhcp26-slides/">magicalcodewit.ch/dhcp26-slides/</a>
+            </p>
+        </section>
+    </div>
+</div>
+<script src="/reveal-js/reveal.js"></script>
+<script src="/reveal-js/notes/notes.js"></script>
+<script src="/reveal-js/markdown/markdown.js"></script>
+<script src="/reveal-js/highlight/highlight.js"></script>
+<script src="/reveal-js/math/math.js"></script>
+<script>
+    Reveal.initialize({
+        width: 1920,
+        height: 1080,
+        margin: 0.04,
+        hash: true,
+        transition: "fade",
+        plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX]
+    });
+</script>
+</body>
+</html>
+
+

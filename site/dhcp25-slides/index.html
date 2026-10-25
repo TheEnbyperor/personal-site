@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Tappybara: Niemand hat die Absicht, Bargeld zu digitalisieren!</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/reveal-js/reset.css">
+    <link rel="stylesheet" href="/reveal-js/reveal.css">
+    <link rel="stylesheet" href="/reveal-js/theme/white.css">
+    <link rel="stylesheet" href="/reveal-js/highlight/monokai.css">
+    <link rel="stylesheet" href="/slides-personal.css">
+</head>
+<body id="reveal">
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h2>Tappybara</h2>
+            <h3>'Niemand hat die Absicht,<br/>Bargeld zu digitalisieren!'</h3>
+            <h4>Q Misell</h4>
+            <p>Die Heilbronner Chaos Party</p>
+            <p>1. Nov 2025</p>
+        </section>
+        <section>
+            <h2>Who is this creature?</h2>
+            <ul>
+                <li>Researcher at the Max-Planck Institut für Informatik</li>
+                <li>Runs Glauca Digital</li>
+            </ul>
+        </section>
+        <section>
+            <h1>Motivation</h1>
+        </section>
+        <section>
+            <h2>We had a Chaos event</h2>
+            <img src="mkc-banner.png" alt="">
+        </section>
+        <section>
+            <h2>It had a bar</h2>
+            <img src="cybar.jpeg" alt="">
+        </section>
+        <section>
+            <h2>We would like to receive money<br/>for our goods and services</h2>
+            <img src="wallet-cash.jpg" alt="">
+        </section>
+        <section>
+            <h3>Cash is annoying at a bar</h3>
+            <h3>Card payments means dealing with<br/>Americans, and paying processing fees</h3>
+        </section>
+        <section>
+            <h2>Solution?</h2>
+            <p>Build our own contactless payment system,<br/>with blackjack and hookers!</p>
+        </section>
+        <section>
+            <h1>Step 1</h1>
+            <h2>Build a bank</h2>
+        </section>
+        <section>
+            <h3>Uhh, how exactly?</h3>
+            <h2 class="fragment">With a Pretix plugin of course!</h2>
+        </section>
+        <section>
+            <h3>Why Pretix?</h3>
+            <img src="pretix-cybar.png" alt="">
+        </section>
+        <section>
+            <img src="pretix-wallet.png" alt="">
+        </section>
+        <section>
+            <h3>We have a record of how<br/>much we've been given</h3>
+            <h2>How do creatures spend it at the bar?</h2>
+        </section>
+        <section>
+            <h1>Step 2</h1>
+            <h2>Giving creatures their vouchers</h2>
+        </section>
+        <section>
+            <img src="apfeltasche.png" alt="" style="height: 1000px;"/>
+        </section>
+        <section>
+            <img src="apple-wallet-pass.jpeg" alt="" style="height: 1000px;"/>
+        </section>
+        <section>
+            <h3>Isn't that just the event ticket?</h3>
+            <h4>Also, that barcode looks a little funny...</h4>
+        </section>
+        <section>
+            <h2>It's actually a train ticket</h2>
+            <h4>(kinda)</h4>
+            <img src="pretix-zuegli.png" alt="" style="height: 900px;"/>
+        </section>
+        <section>
+            <h3>For those who don't want to use a phone</h3>
+            <img src="cat-printer.jpeg" alt="" style="height: 900px;"/>
+        </section>
+        <section>
+            <h1>Step 3</h1>
+            <h2>Paying</h2>
+        </section>
+        <section>
+            <video src="IMG_5488.mov" controls muted style="height: 1000px;"></video>
+        </section>
+        <section>
+            <h3>"I was promised NFC, where's the NFC?!"</h3>
+        </section>
+        <section>
+            <h1>Step 4</h1>
+            <h2>Value Added Services Protocols</h2>
+        </section>
+        <section>
+            <img src="apple-wallet-vas.png" alt="" style="height: 1000px;"/>
+            <img src="google-wallet-vas.png" alt="" style="height: 1000px;"/>
+        </section>
+        <section>
+            <h2>Apple's VAS</h2>
+            <img src="apple-nfc-approval.png" alt="">
+        </section>
+        <section>
+            <h3>That doesn't sound very<br/>Digital Markets Act compliant</h3>
+        </section>
+        <section>
+            <blockquote>
+                <p>We have reviewed your submissions and determined that your requests fall outside the scope of Article 6(7) DMA because the functionalities you seek (FIDO token support and the NFC element of Apple Wallet) are not features that are accessed or controlled via iOS or iPadOS.</p>
+                <p>For this reason, we are not moving your request to the next phase of our interoperability process.</p>
+                <p>This concludes our DMA Article 6(7) review.</p>
+            </blockquote>
+        </section>
+        <section>
+            <h2>Google Smart Tap</h2>
+            <p>Google has no such silly restrictions</p>
+        </section>
+        <section>
+            <h3>There's still an NDA...</h3>
+            <img src="smart-tap-nda.png" alt="">
+        </section>
+        <section>
+            <h3>A thanks</h3>
+            <p style="font-size: 35px;">
+                <img src="github-mark-white.svg" alt=""
+                     style="height: 50px; vertical-align: middle;margin-right: 10px;">
+                kormax / apple-vas
+            </p>
+        </section>
+        <section>
+            <h2>How these protocols work</h2>
+            <p>All over ISO 7816-4, lots of BER TLV, some NDEF</p>
+        </section>
+        <section>
+            <h3>Common start</h3>
+            <p>SELECT <code>OSE.VAS.01</code></p>
+            <ul>
+                <li>
+                    <code>6F</code> - File Control Information
+                    <ul>
+                        <li>
+                            <code>50</code> - Implementation
+                            <ul>
+                                <li><code>ApplePay</code> or</li>
+                                <li><code>AndroidPay</code></li>
+                            </ul>
+                        </li>
+                        <li>And that's all that's common between them...</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h3>Apple's Protocol</h3>
+            <ul>
+                <li>Phone gives its protocol version</li>
+                <li>Some other bits that can be safely ignored</li>
+                <li>GET DATA command with the SHA-256 hash of the pass type ID</li>
+                <li>
+                    Response has:
+                    <ul>
+                        <li>Pass public key fingerprint (4 bytes)</li>
+                        <li>Device ephemeral public key (32 bytes)</li>
+                        <li>
+                            AES-GCM encrypted data, containing:
+                            <ul>
+                                <li>Device timestamp (4 bytes)</li>
+                                <li>Pass payload</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>Encryption key derived with ECDH and the X963 KDF</li>
+                <li>Payload decryption can happen after the fact,<br/>not even on the terminal</li>
+                <li>Not much more to it!</li>
+            </ul>
+        </section>
+        <section>
+            <h3>Google's Protocol</h3>
+            <ul>
+                <li>Phone gives protocol version(s) it supports</li>
+                <li>Also, device nonce and device ephemeral key</li>
+                <li>At this point, the protocol switches to NDEF from BER TLV</li>
+                <li>Terminal sends nonce and ephemeral public key</li>
+                <li>
+                    Terminal authenticated with signature over:
+                    <ul>
+                        <li>Terminal nonce</li>
+                        <li>Device nonce</li>
+                        <li>Merchant ID</li>
+                        <li>Terminal ephemeral public key</li>
+                    </ul>
+                </li>
+                <li>Sequence number in all exchanges,<br/>to catch someone injecting commands in between</li>
+                <li>GET SMART TAP DATA command, with the type of pass wanted<br/>(e.g. event ticket, coupon, loyalty card)</li>
+                <li>Data returned AES-CTR encrypted</li>
+                <li>Encryption key generated using ECDH and the HKDF with SHA-256</li>
+                <li>Terminal authentication and payload decryption<br/>requires the merchant's global key to be on the terminal</li>
+            </ul>
+        </section>
+        <section>
+            <video src="IMG_5490.MP4" controls muted style="height: 1000px;"></video>
+        </section>
+        <section>
+            <h2>I want this myself!</h2>
+            <p>
+                <code>pip install pretix-uic-barcode pretix-wallet</code>
+            </p>
+            <p style="font-size: 35px;">
+                <img src="github-mark-white.svg" alt=""
+                     style="height: 50px; vertical-align: middle;margin-right: 10px;">
+                TheEnbyperor / tappybara-dot
+            </p>
+            <p style="font-size: 35px;">
+                <img src="github-mark-white.svg" alt=""
+                     style="height: 50px; vertical-align: middle;margin-right: 10px;">
+                TheEnbyperor / tappybara-server
+            </p>
+            <p style="font-size: 35px;">
+                <img src="github-mark-white.svg" alt=""
+                     style="height: 50px; vertical-align: middle;margin-right: 10px;">
+                TheEnbyperor / pretix-wallet-register<br/>
+                <code>https://glc.ax/pretix-wallet</code>
+            </p>
+        </section>
+        <section>
+            <h2>Questions?</h2>
+            <p>
+                Email: q@magicalcodewit.ch<br/>
+                Fedi: q@glauca.space
+            </p>
+            <p>
+                Slides at <a href="https://magicalcodewit.ch/dhcp25-slides/">magicalcodewit.ch/dhc25-slides/</a>
+            </p>
+        </section>
+    </div>
+    <script src="/reveal-js/reveal.js"></script>
+    <script src="/reveal-js/notes/notes.js"></script>
+    <script src="/reveal-js/markdown/markdown.js"></script>
+    <script src="/reveal-js/highlight/highlight.js"></script>
+    <script src="/reveal-js/math/math.js"></script>
+    <script>
+        Reveal.initialize({
+            width: 1920,
+            height: 1080,
+            margin: 0.04,
+            hash: true,
+            plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX]
+        });
+    </script>
+</body>
+</html>

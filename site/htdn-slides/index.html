@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Fingerprinting Obfuscated Proxy Traffic with Encapsulated TLS Handshakes</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/reveal-js/reset.css">
+    <link rel="stylesheet" href="/reveal-js/reveal.css">
+    <link rel="stylesheet" href="/reveal-js/theme/white.css">
+    <link rel="stylesheet" href="/reveal-js/highlight/monokai.css">
+    <link rel="stylesheet" href="/slides-personal.css">
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h2>Fingerprinting Obfuscated Proxy Traffic with Encapsulated TLS Handshakes</h2>
+            <h4>Q Misell</h4>
+            <p>Max-Planck-Institut für Informatik</p>
+            <p>18<sup>th</sup> of February 2025</p>
+        </section>
+        <section>
+            <h2>Internet Censorship, briefly</h2>
+        </section>
+        <section>
+            <h3>What is it?</h3>
+        </section>
+        <section>
+            <h3><del>Fahrenheit</del>HTTP 451: Unavailable for Legal Reasons</h3>
+            <img src="HTTP_451_(Chromium).png" alt="" style="width: 80%">
+        </section>
+        <section>
+            <img src="European_HTTP_451.png" alt="" style="width: 80%">
+        </section>
+        <section>
+            <h3>But, why?</h3>
+            <ul>
+                <li>Maintaining control on information</li>
+                <li>Copyright</li>
+                <li>Anything deemed 'undesirable' - merited or not</li>
+            </ul>
+        </section>
+        <section>
+            <h3>How?</h3>
+            <ul>
+                <li>DNS blocks</li>
+                <li>IP blocks</li>
+                <li><strong>Deep Packet Inspection</strong></li>
+            </ul>
+        </section>
+        <section>
+            <h2>Measuring censorship</h2>
+            <p>A case study on Turkey and Russia by Anderson et al.</p>
+            <p><small>
+                <a href="https://www.usenix.org/conference/foci14/workshop-program/presentation/anderson">Global Network Interference Detection Over the RIPE Atlas Networks</a><br/>
+                Collin Anderson, Philipp Winter, and Roya. 2014<br/>
+                In the 4th USENIX Workshop on Free and Open Communications on the Internet (FOCI 14)
+            </small></p>
+        </section>
+        <section>
+            <h3>RIPE Atlas</h3>
+            <img src="foci14-anderson.jpg" alt="">
+        </section>
+        <section>
+            <h3>Useful measurements from the Atlas</h3>
+            <ul>
+                <li>DNS resolution</li>
+                <li>Traceroute</li>
+                <li>Attempting to open an SSL connection</li>
+            </ul>
+            <p><strong>Not</strong> possible to make HTTP requests</p>
+        </section>
+        <section>
+            <h3>Turkey: blocking Twitter and YouTube</h3>
+            <ul>
+                <li>Reactive, haphazard censor</li>
+                <li>First, false answers from Turkish ISPs' DNS servers</li>
+                <li>Then, TLS Server Name Identification interference and IP blocks</li>
+                <li>BGP high-jacks as a last resport</li>
+            </ul>
+        </section>
+        <section>
+            <h4>Aside: what on earth is SNI?!</h4>
+            <img src="sni_virtual_hosting2.png" alt="">
+        </section>
+        <section>
+            <h4>SNI is sent in plain text</h4>
+            <p>modulo Encrypted Client Hello</p>
+        </section>
+        <section>
+            <h3>Russia: much more coordinated</h3>
+            <ul>
+                <li>LiveJournal moving sites which the Russian state wishes to block to a special IP range</li>
+                <li>Co-ordinated TLS interception by all Russian ISPs</li>
+            </ul>
+        </section>
+        <section>
+            <h2>It happens in the EU too</h2>
+            <p>A case study on Spain by Ververis et al.</p>
+            <p><small>
+                <a href="https://doi.org/10.1145/3447535.3462638">Understanding Internet Censorship in Europe: The Case of Spain</a><br/>
+                Vasilis Ververis, Tatiana Ermakova, Marios Isaakidis, Simone Basso, Benjamin Fabian, and Stefania Milan. 2021<br/>
+                In Proceedings of the 13th ACM Web Science Conference 2021 (WebSci ’21)
+            </small></p>
+        </section>
+        <section>
+            <img src="ooni-logo.svg" alt="" style="width: 75%">
+        </section>
+        <section>
+            <h3>Broad categories of censorship</h3>
+            <ul>
+                <li>Copyright infringement</li>
+                <li>Catalan independence referendum</li>
+            </ul>
+            <p>Most effort concentrated on the Catalan referendum</p>
+        </section>
+        <section>
+            <h3>ISPs' worked to make blocks appear as if the website wasn't functioning</h3>
+            <p>'Nothing to see here, move along'</p>
+        </section>
+        <section>
+            <h2>The goals of a censor</h2>
+            <ul>
+                <li>High false positive rate: undesirable</li>
+                <li>High false negative rate: deemed acceptable</li>
+            </ul>
+            <blockquote>
+                <p>Today we were unlucky, but remember we have only to be lucky once, you will have to be lucky always.</p>
+            </blockquote>
+            <p>— <cite>IRA Army Council</cite></p>
+        </section>
+        <section>
+            <p>A censor wants to block as much undesirable traffic without impacting permissible internet use.</p>
+            <p>Someone evading a censor wants to blend in as much as possible to avoid detection.</p>
+            <p>Result: encapsulate traffic in something benign</p>
+        </section>
+        <section>
+            <img src="Screenshot%202025-01-27%20at%2016.35.22.png" alt="">
+            <p>Traffic on the internet is generally encrypted, so encrypted encapsulated traffic doesn't look out of the ordinary.</p>
+        </section>
+        <section>
+            <h2>Encrypted traffic can still be fingerprinted</h2>
+            <p>TLS-within-TLS looks different to normal TLS</p>
+        </section>
+        <section>
+            <h3>Hold on, why are we stacking TLS?</h3>
+            <ol>
+                <li>Connect to censorship evasion system over TLS</li>
+                <li>Load a website</li>
+                <li>Website also uses TLS</li>
+                <li>TLS-within-TLS</li>
+            </ol>
+        </section>
+        <section>
+            <h3>How do the authors detect this?</h3>
+            <p>Packet size n-grams</p>
+        </section>
+        <section>
+            <h3>n-grams?</h3>
+            <p>An ordered list of n symbols</p>
+        </section>
+        <section>
+            <h3>An example</h3>
+            <p>An outbound packet of 300 bytes followed by two inbound packets of 100 and 200 bytes respectively</p>
+            <p>Resulting n-gram: <code>(300, −100, −200)</code></p>
+        </section>
+        <section>
+            <h3>Which value to pick for n?</h3>
+            <p>A TLS handshake normally takes 3 round-trips, and 3 works best here</p>
+        </section>
+        <section>
+            <h3>Flow classification</h3>
+            <p>X<sup>2</sup> classifier</p>
+            <p>Determine if a distribution of categorical values significantly differs from another</p>
+        </section>
+        <section>
+            <h3>N.b.: the raw packet sizes are not used</h3>
+            <p>This would result in a potential 3000<sup>3</sup>-degree classifier with the standard Ethernet MTU of 1500</p>
+            <p>Group into 4 buckets for Client Hello, Server Hello, Client Key Exchange, and everything else</p>
+            <p>Much more manageable 8<sup>3</sup>-degree classifier.</p>
+        </section>
+        <section>
+            <h2>Burst sequences</h2>
+            <p>Often a call to <code>write()</code> will be split up across multiple packets</p>
+            <p>Aggregate packets arriving with the connection RTT</p>
+        </section>
+        <section>
+            <p>The classifier correctly detects a connection as an evasive connection between 50% and 60% of the time
+                whilst incorrectly classifying a harmless stream as an evasive stream only 0,5% of the time</p>
+            <img src="tls-tpr-fpr.png" alt="" style="width: 75%; background: #fff">
+        </section>
+        <section>
+            <h2>Key takeaways</h2>
+            <ul>
+                <li>Effective against almost any encapsulation protocol</li>
+                <li>Decent TPR with a low FPR</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Defences</h2>
+            <img src="padding-tpr-fpr.png" alt="" style="width: 75%; background: #fff">
+        </section>
+        <section>
+            <h3>What to do?</h3>
+            <ul>
+                <li>Make encapsulated TLS look more normal</li>
+                <li>Padding</li>
+                <li>Multiplexing</li>
+            </ul>
+        </section>
+        <section>
+            <h2>iCloud Private Relay</h2>
+            <ul>
+                <li>Apple's 'VPN' service</li>
+                <li>Uses HTTP/2 and HTTP/3 <code>CONNECT</code></li>
+                <li>Effectively TLS-within-TLS</li>
+                <li>Will make this kind of traffic more normal with Apple's market penetration</li>
+            </ul>
+        </section>
+        <section>
+            <h2>QUIC padding</h2>
+            <ul>
+                <li>QUIC has support for padding frames</li>
+                <li>Siby et al. show injecting dummy requests decreases TPR</li>
+                <li>From 93% to 54% at the cost of 137kiB of extra data transferred</li>
+            </ul>
+            <p><small>
+                <a href="https://arxiv.org/abs/2203.07806">You get PADDING, everybody gets PADDING! You get privacy? Evaluating practical QUIC website fingerprinting protections for the masses.</a><br/>
+                Sandra Siby, Ludovic Barman, Christopher Wood, Marwan Fayed, Nick Sullivan, and Carmela Troncoso. 2022.
+            </small></p>
+        </section>
+        <section>
+            <h2>Post-Quantum Cryptography</h2>
+            <ul>
+                <li>Quantum computer resistant cryptography</li>
+                <li>Starting to be deployed on TLS</li>
+                <li>Vastly changes how a TLS handshake looks on the wire</li>
+                <li>Likely to throw off classifiers</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Multipath routing</h2>
+            <ul>
+                <li>Split a connection across multiple routes</li>
+                <li>All connections appear unrelated to an outside observer</li>
+                <li>Deployed by Apple since 2013</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Thank you! Questions?</h2>
+            <p>
+                Email: qmisell@mpi-inf.mpg.de
+            </p>
+            <p>
+                Slides at <a href="https://magicalcodewit.ch/htdn-slides/">magicalcodewit.ch/htdn-slides/</a>
+            </p>
+        </section>
+    </div>
+    <script src="/reveal-js/reveal.js"></script>
+    <script src="/reveal-js/notes/notes.js"></script>
+    <script src="/reveal-js/markdown/markdown.js"></script>
+    <script src="/reveal-js/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            width: 1920,
+            height: 1080,
+            margin: 0.04,
+            hash: true,
+            plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+        });
+    </script>
+</div>
+</body>
+</html>

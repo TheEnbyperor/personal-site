@@ -1,0 +1,1034 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>What's inside my train ticket?</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/reveal-js/reset.css">
+    <link rel="stylesheet" href="/reveal-js/reveal.css">
+    <link rel="stylesheet" href="/reveal-js/theme/white.css">
+    <link rel="stylesheet" href="/reveal-js/highlight/monokai.css">
+    <link rel="stylesheet" href="/slides-personal.css">
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h2>What's inside my train ticket?</h2>
+            <h4>Q Misell</h4>
+            <p>38<sup>th</sup> Chaos Communication Congress</p>
+            <p>30<sup>th</sup> of December 2024</p>
+        </section>
+        <section>
+            <h2>Who am I?</h2>
+            <ul>
+                <li>Researcher at the Max-Planck Institut für Informatik</li>
+                <li>Runs Glauca Digital</li>
+                <li>Massive nerd about trains 🚂</li>
+            </ul>
+        </section>
+        <section>
+            <h4>Things I have to say</h4>
+            <p>
+                <small>
+                    The contents of this presentation are derived of my own personal work, and have neither been funded,
+                    endorsed, nor sanctioned by the Max-Planck-Gesellschaft zur Förderung der Wissenschaften e. V.,
+                    the German Government, the Verband Deutscher Verkehrsunternehmen e.V., the Union internationale des
+                    chemins de fer, the European Union Agency for Railways, the Rail Delivery Group Limited, any of
+                    their respective members, or anyone else I may be about to annoy.
+                </small>
+            </p>
+        </section>
+        <section>
+            <h2>What will I be covering?</h2>
+            <ul>
+                <li>I am from Wales 🏴󠁧󠁢󠁷󠁬󠁳󠁿 (the UK 🇬🇧)</li>
+                <li>I live in Germany 🇩🇪</li>
+                <li>I have very little experience of non InterRail travel elsewhere</li>
+            </ul>
+        </section>
+        <section>
+            <h2>What is a train?</h2>
+            <p class="fragment">
+                <img src="ice-3.jpg" alt="" style="width: 50%"><br/>
+                <small>&copy; Sebastian Terfloth - CC BY-SA</small>
+            </p>
+        </section>
+        <section>
+            <p>
+                <img src="uic-paper-ticket.png" alt="" style="width: 70%"><br/>
+                <small>&copy; Union internationale des chemins de fer</small>
+            </p>
+        </section>
+        <section>
+            <h2>Digitalisierung!</h2>
+            <img src="techniker.png" alt="" style="width: 50%">
+        </section>
+        <section>
+            <h2>Types of digital tickets</h2>
+            <ol>
+                <li>
+                    The UIC barcodes
+                    <ol>
+                        <li>Ticket Layout Barcode</li>
+                        <li>Flexible Content Barcode</li>
+                        <li>Small Structured Barcode</li>
+                        <li>Element List Barcode</li>
+                    </ol>
+                </li>
+                <li>VDV-KA Barcode</li>
+                <li>RSP Barcodes</li>
+                <li>Some other weird bits</li>
+            </ol>
+        </section>
+        <section>
+            <h2>UIC barcodes</h2>
+            <h4>TAP TSI TD B.12</h4>
+            <img src="tap-tsi-td-b12_Page_01.png" alt="" style="width: 33%"><br/>
+        </section>
+        <section>
+            <h2>UIC Envelope</h2>
+            <pre><code class="no-highlight" data-trim data-noescape>
+                <span style="color: red">#UT</span><span style="color: lightblue">02</span><span style="color: orange">5101</span><span
+                    style="color: teal">00001</span><span
+                    style="color: lightgreen">&lt;load of binary data&gt;</span><span style="color: magenta">1337</span><span
+                    style="color: yellow">&lt;some more binary data&gt;</span>
+            </code></pre>
+            <table style="font-size: 25px;">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Type</th>
+                    <th>Start</th>
+                    <th>Length (bytes)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr style="color: red">
+                    <td>Fixed <code>#UT</code></td>
+                    <td>ASCII</td>
+                    <td>0</td>
+                    <td>3</td>
+                </tr>
+                <tr style="color: lightblue">
+                    <td>Version - currently <code>01</code> or <code>02</code></td>
+                    <td>ASCII</td>
+                    <td>3</td>
+                    <td>2</td>
+                </tr>
+                <tr style="color: orange">
+                    <td>RICS - e.g. <code>1080</code> for DB AG</td>
+                    <td>ASCII</td>
+                    <td>5</td>
+                    <td>4</td>
+                </tr>
+                <tr style="color: teal">
+                    <td>Key ID</td>
+                    <td>ASCII</td>
+                    <td>9</td>
+                    <td>5</td>
+                </tr>
+                <tr style="color: lightgreen">
+                    <td>DSA signature</td>
+                    <td>Bytes</td>
+                    <td>14</td>
+                    <td>50</td>
+                </tr>
+                <tr style="color: magenta">
+                    <td>Data length</td>
+                    <td>ASCII</td>
+                    <td>64</td>
+                    <td>4</td>
+                </tr>
+                <tr style="color: yellow">
+                    <td>DEFLATE compressed data</td>
+                    <td>Bytes</td>
+                    <td>68</td>
+                    <td>...</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h2>DSA signatures?</h2>
+            <p>These can be insecure if done wrong - please give me your tickets!</p>
+            <p>Details on how to later in the talk.</p>
+        </section>
+        <section>
+            <h2>What's a RICS?</h2>
+            <h4>Railway Interchange Coding System - Company Codes</h4>
+        </section>
+        <section>
+            <h2>Get your own RICS</h2>
+            <p>
+                Its free!<br/>
+                <a href="https://uic.org/rics">uic.org/rics</a>
+            </p>
+            <img src="rics.png" alt="" style="width: 70%">
+        </section>
+        <section>
+            <h2>Signatures</h2>
+            <table style="font-size: 28px;">
+                <tr>
+                    <th>Version</th>
+                    <th>Signature</th>
+                    <th>Encoding</th>
+                </tr>
+                <tr>
+                    <th>1</th>
+                    <td>SHA-160, DSA-512<br/>SHA-160, DSA-1024</td>
+                    <td>ASN.1</td>
+                </tr>
+                <tr>
+                    <th>2</th>
+                    <td>SHA-224, DSA-2048<br/>SHA-256, DSA-2048</td>
+                    <td><code>(r, s)</code> as concatenated 32-bit integers</td>
+                </tr>
+            </table>
+        </section>
+        <section>
+            <h2>Public keys?</h2>
+            <p>Most are published, some are not 😕</p>
+            <p><a href="https://railpublickey.uic.org">railpublickey.uic.org</a></p>
+            <p>
+                <small>
+                    Anyone have any non-public public keys?
+                    Send them to <a href="mailto:q@magicalcodewit.ch">q@magicalcodewit.ch</a>.
+                </small>
+            </p>
+        </section>
+        <section>
+            <h2>Contents</h2>
+            <pre><code class="no-highlight" data-trim data-noescape>
+                <span style="color: red">U_HEAD</span><span style="color: lightblue">01</span><span style="color: teal">1337</span>...
+            </code></pre>
+            <table style="font-size: 25px;">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Type</th>
+                    <th>Start</th>
+                    <th>Length</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr style="color: red">
+                    <td>Field ID</td>
+                    <td>ASCII</td>
+                    <td>0</td>
+                    <td>5</td>
+                </tr>
+                <tr style="color: lightblue">
+                    <td>Version</td>
+                    <td>ASCII</td>
+                    <td>5</td>
+                    <td>2</td>
+                </tr>
+                <tr style="color: magenta">
+                    <td>Data length</td>
+                    <td>ASCII</td>
+                    <td>7</td>
+                    <td>4</td>
+                </tr>
+                <tr style="color: teal">
+                    <td>Data</td>
+                    <td>Bytes</td>
+                    <td>11</td>
+                    <td>...</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h4><code>U_HEAD</code> record</h4>
+            <pre><code class="no-highlight" data-trim data-noescape>
+                <span style="color: red">5101</span><span style="color: lightblue">N1PWCKWX            </span><span
+                    style="color: orange">201020242317</span><span style="color: teal">0</span><span
+                    style="color: lightgreen">DE</span><span style="color: magenta">EN</span>
+            </code></pre>
+            <table style="font-size: 25px;">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Start</th>
+                    <th>Length</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr style="color: red">
+                    <td>RICS</td>
+                    <td>0</td>
+                    <td>4</td>
+                </tr>
+                <tr style="color: lightblue">
+                    <td>Ticket ID</td>
+                    <td>4</td>
+                    <td>20</td>
+                </tr>
+                <tr style="color: orange">
+                    <td>Issuing time - DDMMYYYYHHMM</td>
+                    <td>24</td>
+                    <td>12</td>
+                </tr>
+                <tr style="color: teal">
+                    <td>
+                        Flags<br/>
+                        <ul>
+                            <li>1: International ticket</li>
+                            <li>2: Edited by agent</li>
+                            <li>4: Specimen</li>
+                        </ul>
+                    </td>
+                    <td>36</td>
+                    <td>1</td>
+                </tr>
+                <tr style="color: lightgreen">
+                    <td>Primary language</td>
+                    <td>37</td>
+                    <td>2</td>
+                </tr>
+                <tr style="color: magenta">
+                    <td>Secondary language</td>
+                    <td>39</td>
+                    <td>2</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h4><code>U_TLAY</code> record</h4>
+            <pre><code class="no-highlight" data-trim data-noescape>
+                <span style="color: red">RCT2</span><span style="color: lightblue">0015</span><span
+                    style="color: orange">12</span><span style="color: teal">21</span><span
+                    style="color: lightgreen">01</span><span style="color: magenta">20</span><span
+                    style="color: yellow">0</span><span style="color: green">0016</span><span style="color: blue">Hack the planet!</span>...
+            </code></pre>
+            <table style="font-size: 20px;">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Start</th>
+                    <th>Length</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr style="color: red">
+                    <td>Layout standard</td>
+                    <td>0</td>
+                    <td>4</td>
+                </tr>
+                <tr style="color: lightblue">
+                    <td>Field count</td>
+                    <td>4</td>
+                    <td>4</td>
+                </tr>
+                <tr style="color: orange">
+                    <td>Field line</td>
+                    <td>8</td>
+                    <td>2</td>
+                </tr>
+                <tr style="color: teal">
+                    <td>Field column</td>
+                    <td>10</td>
+                    <td>2</td>
+                </tr>
+                <tr style="color: lightgreen">
+                    <td>Field height</td>
+                    <td>12</td>
+                    <td>2</td>
+                </tr>
+                <tr style="color: magenta">
+                    <td>Field width</td>
+                    <td>14</td>
+                    <td>2</td>
+                </tr>
+                <tr style="color: yellow">
+                    <td>
+                        Flags<br/>
+                        <ul>
+                            <li>1: Bold</li>
+                            <li>2: Italic</li>
+                            <li>4: Small font</li>
+                        </ul>
+                    </td>
+                    <td>16</td>
+                    <td>1</td>
+                </tr>
+                <tr style="color: green">
+                    <td>Text length</td>
+                    <td>17</td>
+                    <td>4</td>
+                </tr>
+                <tr style="color: blue">
+                    <td>Text</td>
+                    <td>21</td>
+                    <td>...</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <p>
+                <img src="rct2-ticket.png" alt="" style="width: 80%"><br/>
+                <small>&copy; European Union Agency for Railways</small>
+            </p>
+        </section>
+        <section>
+            <p>
+                <img src="rct2-render.png" alt="" style="width: 80%">
+            </p>
+        </section>
+        <section>
+            <h4><code>U_FLEX</code> record</h4>
+            <p>ASN.1 Unaligned Packed Encoding Rules (UPER)</p>
+            <p style="font-size: 25px;">Ï
+                <img src="github-mark-white.svg" alt=""
+                     style="height: 50px; vertical-align: middle;margin-right: 10px;">
+                UnionInternationalCheminsdeFer / UIC-barcode<br/>
+                <code>misc/uicRailTicketData_v3.0.3.asn</code>
+            </p>
+        </section>
+        <section>
+            <pre><code class="asn1" data-trim data-noescape>
+                UicRailTicketData ::= SEQUENCE {
+                  issuingDetail       IssuingData,
+                  travelerDetail      TravelerData                OPTIONAL,
+                  transportDocument   SEQUENCE OF DocumentData    OPTIONAL,
+                  controlDetail       ControlData                 OPTIONAL,
+                  extension           SEQUENCE OF ExtensionData   OPTIONAL,
+                  ...
+                }
+            </code></pre>
+        </section>
+        <section>
+            <pre><code class="asn1" data-trim data-noescape>
+                DocumentData ::= SEQUENCE {
+                  token  TokenType OPTIONAL,
+                  ticket CHOICE {
+                    -- Seat reservation
+                    reservation            ReservationData,
+                    -- AutoZug
+                    carCarriageReservation CarCarriageReservationData,
+                    openTicket             OpenTicketData, -- Normal ticket
+                    pass                   PassData, -- InterRail
+                    voucher                VoucherData,
+                    customerCard           CustomerCardData, -- BahnCard
+                    counterMark            CountermarkData, -- Group tickets
+                    parkingGround          ParkingGroundData, -- Car parking
+                    fipTicket              FIPTicketData, -- Staff ticket
+                    stationPassage         StationPassageData,
+                    extension              ExtensionData,
+                    delayConfirmation      DelayConfirmation,
+                    ...
+                  },
+                  ...
+                }
+            </code></pre>
+        </section>
+        <section>
+            <h4>Private use records</h4>
+            <p>RICS + 2 chars</p>
+            <p>Shove anything you want inside!</p>
+        </section>
+        <section>
+            <h5>Some examples</h5>
+            <ul>
+                <li><code>5008TI</code> - Deutchlandtarifverbund ticket data</li>
+                <li><code>5008PA</code> - Deutchlandtarifverbund passenger data</li>
+                <li><code>0080BL</code> - DB old style tickets, pre flex</li>
+                <li><code>0080VU</code> - DB VDV data (CityTicket, etc.)</li>
+                <li><code>1154UT</code> - České dráhy data</li>
+                <li><code>118199</code> - Inexplicable ÖBB JSON</li>
+            </ul>
+        </section>
+        <section>
+            <h2>SSB Envelope</h2>
+            <table style="font-size: 25px;">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Type</th>
+                    <th>Start</th>
+                    <th>Length (bits)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Version - currently <code>3</code></td>
+                    <td>Int</td>
+                    <td>0</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <td>RICS</td>
+                    <td>Int</td>
+                    <td>4</td>
+                    <td>14</td>
+                </tr>
+                <tr>
+                    <td>Key ID</td>
+                    <td>Int</td>
+                    <td>18</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <td>Ticket type</td>
+                    <td>Int</td>
+                    <td>22</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td>Data</td>
+                    <td></td>
+                    <td>27</td>
+                    <td>437</td>
+                </tr>
+                <tr>
+                    <td>DSA r</td>
+                    <td>Int</td>
+                    <td>464</td>
+                    <td>224</td>
+                </tr>
+                <tr>
+                    <td>DSA s</td>
+                    <td>Int</td>
+                    <td>688</td>
+                    <td>225</td>
+                </tr>
+                </tbody>
+            </table>
+            <p style="font-size: 25px;">
+                Always 114 bytes. Ticket type values 0 to 20 are well-known, 21 to 31 are private use.
+            </p>
+        </section>
+        <section>
+            <h4>Type 1 - Integrated Reservation Ticket</h4>
+            <img src="ssb-nrt.png" alt="" style="width: 55%">
+        </section>
+        <section>
+            <h4>6-bit ASCII</h4>
+            <p>
+                6-bit integer sequence<br/>
+                ASCII code point: <code>(i + 0x20)</code>
+            </p>
+        </section>
+        <section>
+            <h4>NS KeyCards</h4>
+            <p>
+                SSB private type 21
+            </p>
+
+            <table style="font-size: 20px;">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Type</th>
+                    <th>Start</th>
+                    <th>Length (bits)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr style="color: red">
+                    <td>Unknown data</td>
+                    <td></td>
+                    <td>0</td>
+                    <td>21</td>
+                </tr>
+                <tr style="color: lightblue">
+                    <td>Card ID</td>
+                    <td>6-bit ASCII</td>
+                    <td>21</td>
+                    <td>84</td>
+                </tr>
+                <tr style="color: orange">
+                    <td>Issuing year</td>
+                    <td>Int</td>
+                    <td>105</td>
+                    <td>4</td>
+                </tr>
+                <tr style="color: orange">
+                    <td>Issuing day</td>
+                    <td>Int</td>
+                    <td>109</td>
+                    <td>9</td>
+                </tr>
+                <tr style="color: red">
+                    <td>Unknown data</td>
+                    <td></td>
+                    <td>118</td>
+                    <td>11</td>
+                </tr>
+                <tr style="color: teal">
+                    <td>Validity start day</td>
+                    <td>Int</td>
+                    <td>129</td>
+                    <td>9</td>
+                </tr>
+                <tr style="color: teal">
+                    <td>Validity end day</td>
+                    <td>Int</td>
+                    <td>138</td>
+                    <td>12</td>
+                </tr>
+                <tr style="color: red">
+                    <td>Unknown data</td>
+                    <td>Int</td>
+                    <td>150</td>
+                    <td>1</td>
+                </tr>
+                <tr style="color: lightblue">
+                    <td>Extra text</td>
+                    <td>6-bit ASCII</td>
+                    <td>151</td>
+                    <td>216</td>
+                </tr>
+                <tr style="color: magenta">
+                    <td>Station ID</td>
+                    <td>Int</td>
+                    <td>367</td>
+                    <td>17</td>
+                </tr>
+                <tr style="color: lightcoral">
+                    <td>Unknown data - likely padding</td>
+                    <td>Int</td>
+                    <td>384</td>
+                    <td>79</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h3>Eurostar</h3>
+            <ul>
+                <li>Eurostar uses ELB barcodes</li>
+                <li>They're kinda boring</li>
+                <li>See the TAP TSI for details</li>
+                <li>✨ No signatures ✨</li>
+            </ul>
+        </section>
+        <section>
+            <h2>VDV-KA Barcodes</h2>
+            <p>This is where the fun reverse engineering starts!</p>
+        </section>
+        <section>
+            <ul>
+                <li>Heavy use of BER-TLV</li>
+                <li>ISO 9796-2 Message Recovery Signatures</li>
+            </ul>
+            <p style="font-size: 25px">
+                ISO want 194<sub>CHF</sub> for 9796-2, come talk to me afterwards if you want a copy.
+            </p>
+        </section>
+        <section>
+            <h4>VDV Envelope</h4>
+            <table>
+                <thead>
+                <tr>
+                    <th>Tag</th>
+                    <th>Contents</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><code>0x9E</code></td>
+                    <td>ISO 9796-2 Signature</td>
+                </tr>
+                <tr>
+                    <td><code>0x9A</code></td>
+                    <td>ISO 9796-2 Signature remainder</td>
+                </tr>
+                <tr>
+                    <td><code>0x7F21</code></td>
+                    <td>Signing certificate</td>
+                </tr>
+                <tr>
+                    <td><code>0x42</code></td>
+                    <td>CA reference</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h4>CA reference</h4>
+            <p>
+                Somewhat like X.509 Authority Key Identifier
+            </p>
+            <table style="font-size: 25px;">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Type</th>
+                    <th>Start</th>
+                    <th>Length (bytes)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Name</td>
+                    <td>ASCII</td>
+                    <td>0</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td>Service indicator</td>
+                    <td>Int</td>
+                    <td>5</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>Algorithm reference</td>
+                    <td>Int</td>
+                    <td>6</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>Year - start from 1990 (reunification)</td>
+                    <td>Int</td>
+                    <td>7</td>
+                    <td>1</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h4>VDV Certificate</h4>
+            <table>
+                <thead>
+                <tr>
+                    <th>Tag</th>
+                    <th>Contents</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><code>0x5F4E</code></td>
+                    <td>Certificate content</td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: center;">
+                        -- OR --
+                    </td>
+                </tr>
+                <tr>
+                    <td><code>0x5F37</code></td>
+                    <td>Certificate signature</td>
+                </tr>
+                <tr>
+                    <td><code>0x5F38</code></td>
+                    <td>Certificate signature remainder</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h4>Chain of trust</h4>
+            <ol>
+                <li>VDV Root CA<br/><code>("EUVDV", 16, 1, 1996)</code></li>
+                <li>Company CA</li>
+                <li>Envelope Cert</li>
+                <li>Ticket</li>
+            </ol>
+        </section>
+        <section>
+            <img src="vdv-root.png" alt="">
+        </section>
+        <section>
+            <p>
+                ISO 9796-2 means we need the public keys to read anything.<br/>
+                Only the root CA is without a message recovery signature - we need the entire chain to read the ticket.
+            </p>
+            <p>
+                Where are the certs?
+            </p>
+        </section>
+        <section>
+            <h4>Enter the open LDAP server</h4>
+            <p><code>ldaps://ldap-vdv-ion.telesec.de:636</code></p>
+            <p><small><code>ou=VDV KA,o=VDV Kernapplikations GmbH,c=de</code></small></p>
+        </section>
+        <section>
+            <img src="telekom.png" alt="">
+        </section>
+        <section>
+            <h4>Signature validation process</h4>
+            <ol>
+                <li>Read barcode</li>
+                <li>Decode VDV envelope</li>
+                <li>Find company cert by envelope CA reference</li>
+                <li>Decrypt company cert with root CA</li>
+                <li>Decrypt envelope cert with company cert</li>
+                <li>Decrypt ticket data with envelope cert</li>
+            </ol>
+        </section>
+        <section>
+            <h4><code>/wp-uploads</code> to the resuce!</h4>
+            <p>
+                <small>Danke schön Kompetenzcenter Digitalisierung NRW und Main-Taunus-Verkehrsgesellschaft!</small>
+            </p>
+            <img src="nrw-elektronisches-fahrgeldmanagement_Page_01.png" alt="" style="width: 30%">
+            <img src="datenlayout-rmv-efs_Page_01.png" alt="" style="width: 30%">
+        </section>
+        <section>
+            <h4>Ticket format</h4>
+            <table style="font-size: 25px;">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Start</th>
+                    <th>Length (bytes)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Header</td>
+                    <td>0</td>
+                    <td>18</td>
+                </tr>
+                <tr>
+                    <td>Product data (BER-TLV)</td>
+                    <td>18</td>
+                    <td>n</td>
+                </tr>
+                <tr>
+                    <td>Common transaction data</td>
+                    <td>n + 18</td>
+                    <td>17</td>
+                </tr>
+                <tr>
+                    <td>Product transaction data (BER-TLV)</td>
+                    <td>n + 35</td>
+                    <td>i</td>
+                </tr>
+                <tr>
+                    <td>Ticket issue</td>
+                    <td>n + i + 35</td>
+                    <td>12</td>
+                </tr>
+                <tr>
+                    <td>Trailer</td>
+                    <td>end - 5</td>
+                    <td>5</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h4>Header format</h4>
+            <table style="font-size: 25px;">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Type</th>
+                    <th>Start</th>
+                    <th>Length (bytes)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Ticket ID</td>
+                    <td>Int</td>
+                    <td>0</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <td>Ticket Org-ID</td>
+                    <td>Int</td>
+                    <td>4</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>Product ID</td>
+                    <td>Int</td>
+                    <td>6</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>Product Org-ID</td>
+                    <td>Int</td>
+                    <td>8</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>Validity start</td>
+                    <td>Datetime</td>
+                    <td>10</td>
+                    <td>14</td>
+                </tr>
+                <tr>
+                    <td>Validity end</td>
+                    <td>Datetime</td>
+                    <td>14</td>
+                    <td>4</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h4>VDV Datetime</h4>
+            <table style="font-size: 25px;">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Start</th>
+                    <th>Length (bits)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Year - starting from 1990</td>
+                    <td>0</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <td>Month</td>
+                    <td>7</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <td>Day</td>
+                    <td>11</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td>Hour</td>
+                    <td>16</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td>Unused</td>
+                    <td>21</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>Minute</td>
+                    <td>23</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <td>Second</td>
+                    <td>27</td>
+                    <td>5</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h4>Where to get the list of Org-IDs?</h4>
+            <p style="font-size: 28px;">
+                <code>https://pro.eticket.app/api/organisations/all</code><br/>
+                Username <code>eticket-app-pro</code>, password <code>VDV-K3rn4ppl!kat1on</code>
+            </p>
+        </section>
+        <section>
+            <p>hvv Card Info app</p>
+            <p>
+                <img src="hvv-card-info.png" alt="" style="width: 20%"><br/>
+                <small>&copy; Hamburger Hochbahn AG</small>
+            </p>
+        </section>
+        <section>
+            <h4>Product data</h4>
+            <ul>
+                <li><code>0xDA</code> - Basic data</li>
+                <li><code>0xDB</code> - Passenger data</li>
+                <li><code>0xDC</code> - Spacial validity</li>
+                <li><code>0xDE</code> - Private use</li>
+                <li><code>0xD7</code> - Identification medium</li>
+            </ul>
+        </section>
+        <section>
+            <h4>Passenger data</h4>
+            <ul>
+                <li>ISO 8859-15 encoding - same as health insurance cards</li>
+                <li>Type 1: <code>Forename#Surname</code></li>
+                <li>Type 2: <code>F6e@S5e</code></li>
+            </ul>
+        </section>
+        <section>
+            <h4>Spacial validity</h4>
+            <img src="space-type.png" alt="">
+        </section>
+        <section>
+            <h4>Identification medium</h4>
+            <ul>
+                <li>Girocard der deutschen Kreditwirtschaft (EC-Karte)</li>
+                <li>Kreditkarte</li>
+                <li>Personalausweis</li>
+                <li>Telefonnummer</li>
+                <li>Sozialpass</li>
+                <li>Schüler-/Studentenausweis</li>
+            </ul>
+        </section>
+        <section>
+            <h2>RSP barcodes</h2>
+            <ul>
+                <li>Used on UK trains</li>
+                <li>Also uses message recovery signatures, but a custom kind</li>
+                <li>Much of the work on these done by eta</li>
+                <li>Go read her excellent post <a href="https://eta.st/2023/01/31/rail-tickets.html">"Reversing UK mobile rail tickets"</a></li>
+            </ul>
+        </section>
+        <section>
+            <h2>SNCF</h2>
+            <p>SNCF have ~5 different custom ticket types<br/>I don't have time to cover these</p>
+        </section>
+        <section>
+            <h2>Look into your tickets</h2>
+            <p><a href="https://vdv-pkpass.magicalcodewit.ch">vdv-pkpass.magicalcodewit.ch</a></p>
+
+            <p style="font-size: 25px;">
+                <img src="github-mark-white.svg" alt=""
+                     style="height: 50px; vertical-align: middle;margin-right: 10px;">
+                TheEnbyperor / vdv-pkpass
+            </p>
+            <img src="website-qr.png" alt="" style="width: 250px">
+        </section>
+        <section>
+            <h4>Some other features of VDV PKPass</h4>
+            <ul>
+                <li>Automatically updating DB and SaarVV D-Tickets</li>
+                <li>Pulling new tickets from DB account</li>
+            </ul>
+        </section>
+        <section>
+            <h2>How do I make my own?</h2>
+            <ul>
+                <li>Get a RICS</li>
+                <li>Generate a DSA key (ew)</li>
+                <li>???</li>
+                <li>Profit!</li>
+            </ul>
+            <p>
+                <small>If you do this and want your public keys in VDV PKPass drop me an email</small>
+            </p>
+        </section>
+        <section>
+            <h2>Thank you! Questions?</h2>
+            <h4>Come donate your tickets at the Shark Corner - for science!</h4>
+            <p>
+                Email: q@magicalcodewit.ch<br/>
+                Fedi: q@glauca.space
+            </p>
+            <p>
+                Slides at <a href="https://magicalcodewit.ch/38c3-slides/">magicalcodewit.ch/38c3-slides/</a>
+            </p>
+        </section>
+    </div>
+    <script src="/reveal-js/reveal.js"></script>
+    <script src="/reveal-js/notes/notes.js"></script>
+    <script src="/reveal-js/markdown/markdown.js"></script>
+    <script src="/reveal-js/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+        });
+    </script>
+</body>
+</html>

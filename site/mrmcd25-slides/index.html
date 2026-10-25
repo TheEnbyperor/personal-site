@@ -1,0 +1,1139 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Railways won’t tell us how their train tickets work - shall we force them to?</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/reveal-js/reset.css">
+    <link rel="stylesheet" href="/reveal-js/reveal.css">
+    <link rel="stylesheet" href="/reveal-js/theme/white.css">
+    <link rel="stylesheet" href="/reveal-js/highlight/monokai.css">
+    <link rel="stylesheet" href="/slides-personal.css">
+    <style>
+        .columns {
+            display: grid;
+            grid-auto-flow: column;
+        }
+    </style>
+</head>
+<body id="reveal">
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h2>Railways won’t tell us how their train tickets work</h2>
+            <h3>Shall we force them to?</h3>
+            <h4>Q, CraftByte</h4>
+            <p>MRMCD 25 - Volle Transparenz</p>
+            <p>12. Sep 2025</p>
+        </section>
+        <section>
+            <h1>Who are we</h1>
+            <div class="columns">
+                <div>
+                    <h2>Q</h2>
+
+                    <ul>
+                        <li>Researcher at the Max-Planck Institut für Informatik</li>
+                        <li>Runs Glauca Digital</li>
+                        <li>Noted train nerd</li>
+                    </ul>
+                </div>
+                <div>
+                    <h2>CraftByte</h2>
+
+                    <ul>
+                        <li>Software developer by day</li>
+                        <li>Security researcher by night</li>
+                        <li>Train nerd somewhere in between</li>
+                        <li>Knows way too much about Slovenian law</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div style="text-align: left; display: inline-block;">
+                <p style="font-size: 100px">schtick</p>
+                <p style="font-size: 60px"><b>noun</b> (<em>plural</em> schticks)</p>
+                <p>A characteristic trait or theme,<br/>especially in the way people or media present themselves.</p>
+            </div>
+        </section>
+        <section>
+            <h2>Why do we even care about what's in a ticket's barcode?</h2>
+            <ul>
+                <li>Curiosity</li>
+                <li>Security research</li>
+                <li>Privacy implications</li>
+                <li>Make cool things (c.f. zügli.app)</li>
+            </ul>
+        </section>
+        <section>
+            <h2>The two <s>genders</s> types of train ticket</h2>
+            <img src="https://md.dragonsec.si/uploads/0b4936a6-3f3e-4cf1-b462-ef97c366a005.png" style="height: 800px"/>
+            <img src="https://md.dragonsec.si/uploads/09339e34-32ec-4e83-82f3-c8b9bf590eb6.png" style="height: 800px"/>
+        </section>
+        <section>
+            <div class="columns">
+                <div>
+                    <h2>UIC Barcodes</h2>
+                    <ul>
+                        <li>EU Standard</li>
+                        <li>Open</li>
+                        <li>Free to use</li>
+                        <li>✨ Friend shaped ✨</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h2>RSP (UK) Barcodes</h2>
+                    <ul>
+                        <li>Proprietary standard</li>
+                        <li>Impossible to get a copy of</li>
+                        <li>Expensive licensing</li>
+                        <li>Decidedly unfriend shaped</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section>
+            <h3>We're hackers, when has a closed<br/>standard ever stopped us?</h3>
+        </section>
+        <section>
+            <h1>A huge thanks to eta & co.</h1>
+
+            Reversing UK mobile rail tickets<br/>
+            <a href="https://eta.st/2023/01/31/rail-tickets.html">eta.st/2023/01/31/rail-tickets.html</a>
+        </section>
+        <section>
+            <h2>What we know from eta's work</h2>
+            <ul>
+                <li>Tickets are a Base26 encoded string</li>
+                <li><em>Interesting</em> (read: bad) use of cryptographic primitives</li>
+                <li>Public keys are required to read the ticket contents</li>
+                <li>We have some of the public keys</li>
+                <li>We know the meaning of <em>most</em> of the fields</li>
+            </ul>
+        </section>
+        <section>
+            <h2>But wait, there's more!</h2>
+            <ul>
+                <li>Reverse engineering didn't give the exact meaning of every field</li>
+                <li>We don't have all the public keys</li>
+                <li>Is there more going on we just didn't/can't see from reverse engineering?</li>
+            </ul>
+        </section>
+        <section>
+            <h1>Enter, stage right: WhatDoTheyKnow</h1>
+            German viewers: this is like FragDenStaat
+            <img src="https://md.dragonsec.si/uploads/a550b502-1502-4976-98ee-a367e45cd065.png"/>
+        </section>
+        <section>
+            <h1>What even is a Freedom of Information (FoI) Act?</h1>
+            <ul>
+                <li>In Scotland: Freedom of Information (Scotland) Act 2002 (asp 13)</li>
+                <li>In the rest of the UK: Freedom of Information Act 2000 (c. 36)</li>
+            </ul>
+            <h2 style="margin-top: 20px">What do they provide?</h2>
+            <ul>
+                <li>Creates a right in law to access information held by public authorities</li>
+                <li>Overseen by the Information Commissioner's Office<br/>and the Scottish Information Commissioner</li>
+            </ul>
+        </section>
+        <section>
+            <h1><em>'Hang on; aren't the UK's railways privatised?'</em></h1>
+            <h2>Well...</h2>
+
+            <p>
+                You came here for a talk on railway ticketing, but ha! you’ve been duped;<br/>
+                this is actually a talk on mid-late 20<sup>th</sup> century British politics!
+            </p>
+        </section>
+        <section data-theme="nse">
+            <h1>UK Railway Privatisation,<br/>(not so) briefly</h1>
+            <h2>Brace yourself, this gets messy</h2>
+        </section>
+        <section data-theme="nse">
+            <h1>The before times</h1>
+
+            <img src="https://md.dragonsec.si/uploads/c997c0c5-a71e-45a1-a4cd-6e9e1061e473.png" style="width: 500px"/>
+
+            <ul>
+                <li>Created as the British Transport Commission under the Transport Act 1947</li>
+                <li>The (then private) railways had no money left after the War, so this was one of the few options left
+                    to 'Keep Britain Moving'
+                </li>
+                <li>Corporatised at the British Railways Board under the Transport Act 1962</li>
+                <li>
+                    Owned and controlled absolutely everything<br>
+                    Hotels in/around stations;
+                    road freight to/from stations;
+                    ferry services to France, Belgium, and the Netherlands;
+                    Railway Air Services Limited;
+                    British Transport Police;
+                    British Rail Property Board;
+                    staff savings bank;
+                    telecoms network
+                </li>
+            </ul>
+        </section>
+        <section data-theme="nse">
+            <h1>The 1979 General Election</h1>
+            <h2>Little Mrs Thatcher had ideas</h2>
+
+            <p>
+                <em>"Wait... why is the government in the hotel business, exactly?"</em>
+            </p>
+
+            <img src="https://md.dragonsec.si/uploads/7080d4d9-594a-4d39-9b5d-9f1c90b35f5a.png" style="width: 750px"/>
+        </section>
+        <section data-theme="nse">
+            <h2>The railways themselves were a hard no</h2>
+            <ul>
+                <li>Rural railways generally operated at a loss</li>
+                <li>The government relied on votes from these rural areas</li>
+                <li>A fully privatised railway would inevitably cut these routes</li>
+                <li>Political suicide</li>
+                <li>Deemed "a privatisation too far" by Thatcher herself</li>
+            </ul>
+        </section>
+        <section data-theme="nse">
+            <h1>Meanwhile, in Sweden</h1>
+            <h2>circa 1988</h2>
+            <ul>
+                <li>Previously, like in the UK the Swedish State Railways operated <b>both track and train</b></li>
+                <li>
+                    Swedish State Railways split in two:
+                    <ul>
+                        <li>Swedish National Rail Administration (Banverket) owning track and real estate</li>
+                        <li>SJ (Statens Järnvägar) operating trains</li>
+                        <li>Rolling stock ownership transferred to local regions</li>
+                    </ul>
+                </li>
+                <li>This appeared, <b>at first</b>, to be very successful</li>
+            </ul>
+        </section>
+        <section data-theme="nse">
+            <h2>The <s>EU</s>European Community makes a move</h2>
+
+            <p>Admirably brief for its consequences, at a mere 4 pages.</p>
+
+            <img src="https://md.dragonsec.si/uploads/7a04fbad-d611-483a-8642-f4c223f1a39f.png"/>
+            <br/>
+            <img src="https://md.dragonsec.si/uploads/a2229a85-b42c-40e4-8348-f8b46cdec472.png"/>
+        </section>
+        <section data-theme="nse">
+            <h1>Railways Act 1993</h1>
+            <h2>Neoliberalism 2 - Electric Boogaloo!</h2>
+            <ul>
+                <li>Out with Thatcher, in with John Major.</li>
+                <li>This setup the privatisation of the UK's railways, in addition to implementing Directive
+                    91/440/EEC.
+                </li>
+                <li>
+                    British Rail not sold off as one BR PLC (a la AG), but split up into hundreds of parts:
+                    <ul>
+                        <li>
+                            Railtrack, owning station and track, subcontracting maintenance to:
+                            <ul>
+                                <li>7 infrastructure maintenance units</li>
+                                <li>6 track renewal units</li>
+                            </ul>
+                        </li>
+                        <li>25 train operating units, operating passenger services</li>
+                        <li>6 freight operating companies, 5 of which are now owned by DB Cargo UK</li>
+                        <li>3 rolling stock leasing companies, owning passenger trains</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+        <section data-theme="nse">
+            <h2>This went... badly</h2>
+            <h3>Hatfield rail crash, 17 October 2000</h3>
+            <p>Railtrack didn't do their job.</p>
+            <ul>
+                <li>Rolling contact fatigue-induced derailment</li>
+                <li>The faulty rail was known about prior to the derailment</li>
+                <li>Replacement rails were available but never delivered<br/>to the correct location for installation
+                </li>
+                <li>Lack of communication</li>
+                <li>Some staff members not aware of maintenance procedures</li>
+                <li>Railtrack had divested engineering knowledge to contractors</li>
+                <li>A Zone Quality Standards Manager testified<br/>"I do not have knowledge of railway engineering nor
+                    railway safety"
+                </li>
+            </ul>
+        </section>
+        <section data-theme="nse">
+            <h2>The aftermath</h2>
+            <img src="https://md.dragonsec.si/uploads/02dbbcf1-6c3f-4bdb-8650-e9366e275972.png" alt=""
+                 style="width: 500px"/>
+            <br/>
+            <ul>
+                <li>Railtrack had no idea how many similar rails could be affected</li>
+                <li>1,800 emergency speed restrictions across the country</li>
+                <li>Having to recheck every rail in the country and replace at great expense</li>
+                <li>Disruption to the UK's economy of circa £6 million per day</li>
+                <li>These costs bankrupt Railtrack</li>
+                <li>The government re-nationalised track and infrastructure under Network Rail</li>
+                <li><b>Less than 10 years after privatisation, its already starting to fall apart</b></li>
+            </ul>
+        </section>
+        <section data-theme="nse">
+            <h2>The trains are still private, right?</h2>
+            <p>Sorta; they have a habit of going bankrupt,<br/>and being replaced with government owned operators:</p>
+            <ol>
+                <li>South Eastern Trains (2003–2006)</li>
+                <li>East Coast (2009–2015)</li>
+                <li>London North Eastern Railway (2018–present)</li>
+                <li>Northern Trains (2020–present)</li>
+                <li>Transport for Wales Rail (2021-present)</li>
+                <li>Southeastern (2021-present)</li>
+                <li>ScotRail (2022-present)</li>
+                <li>TransPennine Express (2023-present)</li>
+                <li>Caledonian Sleeper (2023-present)</li>
+            </ol>
+        </section>
+        <section data-theme="nse">
+            <img src="https://md.dragonsec.si/uploads/5a3c18ef-2f0f-486a-8831-dd1d00d2883e.png" alt=""
+                 style="width: 750px"/>
+            <h3>née Association of Train Operating Companies</h3>
+            <ul>
+                <li>Co-ordinating a big picture</li>
+                <li>Industry-wide communications</li>
+                <li>Ticket validity and acceptance</li>
+                <li>Railway policy</li>
+                <li>National Rail branding</li>
+                <li><b>Still very much a private company</b></li>
+            </ul>
+        </section>
+        <section>
+            <h1>That's enough of that nonsense</h1>
+            <p>You can stop having a nap now...</p>
+        </section>
+        <section>
+            <h2>So, tickets?</h2>
+            <h3>Who in <em>that</em> mess controls<br/>ticketing and their specifications?</h3>
+            <ul>
+                <li>The Rail Delivery Group</li>
+                <li>Who are private</li>
+                <li>And thus outside the FoIA</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Or, so you would think...</h2>
+            <ul>
+                <li>The RDG may be out of scope of the FoIA</li>
+                <li>But the standards they write are used by public operators</li>
+                <li>And thus in scope of the FoIA; more on why that is later</li>
+            </ul>
+        </section>
+        <section>
+            <h2>The (Attack) Plan</h2>
+            <ul>
+                <li>Find all government-owned railway<br/>related companies on WhatDoTheyKnow</li>
+                <li>Ask for a copy of the specs</li>
+                <li>???</li>
+                <li>Profit!</li>
+            </ul>
+        </section>
+        <section>
+            <blockquote>
+                I am writing to request a copy of the following documents and data I believe you hold a copy of:
+                <ul>
+                    <li>Rail Settlement Plan Aztec ticket type "06" specifications - ordinary travel tickets</li>
+                    <li>Rail Settlement Plan Aztec ticket type "08" specifications - digital railcards</li>
+                    <li>Any other Rail Settlement Plan specifications you hold on the issuance of Aztec barcodes and/or
+                        digital tickets for the railways
+                    </li>
+                    <li>Public RSA keys/certificates used by you to issue such Aztec barcodes, in either X.509, PKCS#1,
+                        PKCS#12, or other appropriate format for conveying the public half of an encryption key.
+                    </li>
+                    <li>The same public keys of any other issuer who can issue digital tickets valid on rail services
+                        under your purview.
+                    </li>
+                </ul>
+            </blockquote>
+        </section>
+        <section>
+            <h1>Not so fast!</h1>
+            <h2>The FoIA (and FoISA) have exemptions</h2>
+            <ul>
+                <li>Sec. 21 - information already reasonably accessible</li>
+                <li>Secs. 30 and 31 – investigations and prejudice to law enforcement</li>
+                <li>Sec. 34 – parliamentary privilege</li>
+                <li>Secs. 35 and 36 – government policy and prejudice<br/>to the effective conduct of public affairs
+                </li>
+                <li>Sec. 43 – trade secrets and prejudice to commercial interests</li>
+                <li>And many more!</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Not to worry, we came armed...</h2>
+            <h3>...with a list of reasons why exemptions don't apply</h3>
+            <p>For the full reasons, go read the submissions on WhatDoTheyKnow.</p>
+        </section>
+        <section>
+            <h2>Sec. 38 Health and safety</h2>
+            <blockquote>Rail ticketing does not form a part of the health and safety of the railways.</blockquote>
+        </section>
+        <section>
+            <h2> Sec. 40 Personal information</h2>
+            <blockquote>
+                These standards and public keys contain no personal information within them,
+                even if individual tickets issued following them may contain such information.
+            </blockquote>
+        </section>
+        <section>
+            <h2>Sec. 43 p. 1 Trade secrets</h2>
+            <blockquote>
+                The Information Commissioner’s Office (ICO) states that for this exception to apply "disclosure should
+                also be liable to cause real (or significant) harm to the owner or be advantageous to any rival".
+                The use of public-private key cryptography in the issuance of Aztec tickets ensures that even with
+                disclosure of the specification and public verifying keys there would be no risk of a malicious party
+                forging tickets. Additionally, as the provision of train services in the UK is in effect a government
+                regulated monopoly over certain geographical areas it is unlikely that the second leg of this test
+                applies.
+            </blockquote>
+        </section>
+        <section>
+            <h2>Sec. 43 p.2 Prejudice to commercial interest</h2>
+            <blockquote>
+                The ICO states that “it is not sufficient for you to simply argue that because information is
+                commercially sensitive, its disclosure would, or would be likely to, prejudice commercial interests.
+                You must be able to demonstrate a causal relationship between the disclosure of the information in
+                question and the prejudice you envisage.”
+                <br/>
+                <br/>
+                I understand that some of the documents requested may contain or be subject to confidentiality clauses
+                placed by the Rail Delivery Group. The ICO states that “having a confidentiality clause in place
+                does not guarantee that information will not be disclosed under FOIA”. For the above-mentioned reasons
+                I believe any confidentiality clause you have with the RDG or any other party on this matter is
+                overridden by the public interest and commercial sensitivity tests.
+            </blockquote>
+        </section>
+        <section>
+            <h2>
+                This has made a lot of people very angry<br/>
+                and has been widely regarded as a bad move.
+            </h2>
+            <img src="https://md.dragonsec.si/uploads/447ecb59-829f-47a9-a7fc-d011c2a9f8f6.png" alt=""><br/>
+            Great British Railways Transition Team
+        </section>
+        <section>
+            <h2>Sec. 31(1)(a)</h2>
+            <blockquote>
+                Information which is not exempt information by virtue of section 30 is exempt
+                information if its disclosure under this Act would, or would be likely to, prejudice—
+                <br/>
+                (a)the prevention or detection of crime
+            </blockquote>
+        </section>
+        <section>
+            <h2> Would it really cause crime?</h2>
+            <h1>No</h1>
+            See: R. L. Rivest, A. Shamir, and L. Adleman<br/>"A Method for Obtaining Digital Signatures and Public-Key
+            Cryptosystems" (1978)
+        </section>
+        <section>
+            <h2>So, I submitted appeals...</h2>
+        </section>
+        <section>
+            <h2>
+                This, too, has made a lot of people<br/>
+                very angry and has also been<br/>widely regarded as a bad move.
+            </h2>
+            <blockquote>
+                We disagree that the Act obliges us to engage in a speculative
+                technical debate regarding RSA cryptography, or that it would be
+                reasonable for us to take a 47-year-old academic paper into
+                consideration when assessing our response.
+            </blockquote>
+            Northern Trains Limited
+        </section>
+        <section>
+            <h2>What can you do after a failed appeal?</h2>
+            Appeal again, to a higher power - <s>God</s>the Information Commissioner's Office
+        </section>
+        <section>
+            <h2>That went well...</h2>
+            <blockquote>
+                The Commissioner’s decision is that LNER is entitled to
+                withhold the requested information under section 31(1)(a) of FOIA.
+            </blockquote>
+        </section>
+        <section>
+            <img src="https://md.dragonsec.si/uploads/3f69c656-10ad-4d1b-af66-553b9432639d.png" alt="" style="height: 800px">
+        </section>
+        <section>
+            <h2>This is where it gets funny</h2>
+            <blockquote>
+                It confirmed that [the RDG standards] are not the same as the
+                EU standards the complainant refers to (like European Railways
+                Agency (ERA) [TAP TSI] B.12) in their complaint to the
+                Commissioner. LNER advised that those EU standards are high
+                level and do not include the UK specific systems or the actual
+                logic used in real devices.
+            </blockquote>
+        </section>
+        <section>
+            <h2>Except it does...</h2>
+            <img src="https://md.dragonsec.si/uploads/bb12a6a2-02c2-4b92-9120-a6a12fa03e8e.png" alt=""
+                 style="height: 800px">
+        </section>
+        <section>
+            <h2>They used my own work against me!</h2>
+            <blockquote>
+                LNER commented that there has already been a real world case in
+                Germany where fraudsters used publicly available eTicket
+                specifications (similar to ERA B.12) and a stolen single signing
+                key to create fake but valid tickets. It said the fraudsters’
+                barcodes passed all checks because the information they needed
+                to make an apparently valid but fraudulent ticket was public.
+            </blockquote>
+            c.f. heise online "Deutschlandticket: Mehr illegale<br/>Ticketshops und Zahldatenbetrug aufgedeckt"
+        </section>
+        <section>
+            <h1>An Aside: Scotland</h1>
+        </section>
+        <section>
+            <h2>Why is this in scope of the FoI(S)A, exactly?</h2>
+            <h3>ScotRail thought not</h3>
+            <blockquote>
+                We responded on 18 December 2024 and formally notified you that we were refusing the request under
+                section 17 of FOISA.
+                <br/>
+                <br/>
+                We advised that ScotRail does not directly manage the issuance or specifications of Aztec barcodes and
+                digital tickets. Our online ticket booking engine and digital ticket fulfilment are handled by
+                Trainline through a white label solution, therefore we do not hold the information requested.
+            </blockquote>
+        </section>
+        <section>
+            <blockquote>
+                Information is "held" by a public authority for the purposes of FOISA if it is held in recorded form
+                at the time of the initial request for information. Information held by a third party on behalf
+                of a public body may also be considered as being "held" for the purposes of FOISA where the information
+                belongs to the public authority. In this case, the <b>information you have requested does not belong to
+                ScotRail Trains Limited</b> therefore we neither hold the information directly, nor is it held on our
+                behalf.
+            </blockquote>
+        </section>
+        <section>
+            Let's ask the Scottish Information Commissioner<br/>what they think of that...
+            <br/>
+            <img src="https://md.dragonsec.si/uploads/583ff5d3-a0c5-4e08-95a2-055be8323789.png"/>
+        </section>
+        <section>
+            <blockquote>
+                17. During the investigation, the Authority reconsidered its position and
+                confirmed that it held the information requested for the purposes of FoISA.
+                It said that the information requested was held by the Rail Delivery Group
+                on behalf of its members, of which it was one.
+            </blockquote>
+        </section>
+        <section>
+            <h2>A small win</h2>
+            <img src="https://md.dragonsec.si/uploads/7e234d76-afe5-427c-b9d1-a256bd83c7d5.png" alt="">
+        </section>
+        <section>
+            <h1>Back to <s>the Future</s> England</h1>
+            <h2>We need to show that<br/>Sec. 31(1)(a) doesn't apply</h2>
+        </section>
+        <section>
+            <h2>The next step is court</h2>
+            That sounds expensive...
+        </section>
+        <section>
+            <h2>Its actually free!</h2>
+            Thankfully, the UK has a very reasonable<br/>tribunal process for individual claimants.
+        </section>
+        <section>
+            <img src="https://md.dragonsec.si/uploads/9b3979ed-01c2-48d9-9a25-9e429bbcbd9c.png" alt="">
+        </section>
+        <section>
+            <h2>There are few more terrifying documents</h2>
+            <img src="https://md.dragonsec.si/uploads/fba690a6-b664-473c-8746-db76cc25a71e.png" alt="">
+        </section>
+        <section>
+            <h2>What did everyone say to the judge?</h2>
+        </section>
+        <section>
+            <h3>The Information Commissioner</h3>
+            <blockquote>
+                17. The Commissioner remains content with the fundamental
+                argument by the Train Operators that the disclosure of the
+                remaining withheld information would make fraudulent activity <em>easier</em>
+                (thereby prejudicing the prevention of crime).
+                <br/>
+                <br/>
+                18. However, there are a number of technical matters referred to
+                in the Appellant’s grounds that are <b>clearly beyond the Commissioner’s FOIA expertise</b>
+            </blockquote>
+        </section>
+        <section>
+            <h3>The Train Companies</h3>
+            Maybe disclosing the public keys is... fine, actually?
+            <blockquote>
+                The primary risk does not relate solely to the underlying cryptography,
+                but rather the implementation detail. Disclosing public keys plus the
+                contextual information set out in the RSPS document shows how and when
+                validators will accept or reject tickets signed with those keys.
+            </blockquote>
+        </section>
+        <section>
+            <h3>Lawyers don't understand how computers work, again</h3>
+            <blockquote>
+                Contrary to the Appellant’s assertion, the exempt material which
+                has been redacted does not ... merely show details of what a
+                ticket looks like but also ... JSON templates [and] field mappings.
+            </blockquote>
+        </section>
+        <section>
+            <h3>We have no idea what the criminals have, so we can't say anything!</h3>
+            <blockquote>
+                ... given that it cannot be known with any degree of accuracy
+                what other material is already in the hands of bad actors, it
+                cannot be predicted exactly which pieces of information would
+                provide them with the missing piece of information that would
+                permit fraud to be carried out.
+            </blockquote>
+        </section>
+        <section>
+            <h3>What does the person who designed the system say?</h3>
+            <blockquote>
+                Even if hackers completely take apart a guard’s scanner or a
+                barcode they will only be able to retrieve the <b>freely available</b>
+                public key - they cannot make their own tickets unless they ar
+                e also able to break 1024-bit RSA at the same time.
+            </blockquote>
+            Ben Whitaker, Masabi Founder and Chief Evangelist
+        </section>
+        <section>
+            <h2>Where do we stand?</h2>
+            <ul>
+                <li>Failed FoI requests</li>
+                <li>Failed Internal Reviews</li>
+                <li>Failed appeal to the Information Commissioner</li>
+                <li>Court case in progress, hearing sometime in December/January</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Now for something completely differerent; Slovenia</h2>
+            <h3>No, not Slovakia</h3>
+        </section>
+        <section>
+            <h2>A little bit about public transport in Slovenia</h2>
+            <ul>
+                <li>
+                    Managed by the National Public Transport Management Company (DUJPP)
+                    <ul>
+                        <li>They write the timetables and contracts the operators</li>
+                    </ul>
+                </li>
+                <li>Trains fully operated by Slovenian Railways (SŽ) - a public company</li>
+                <li>
+                    Buses operated by 2 major players and 1 regional provider:
+                    <ul>
+                        <li>Arriva - at least not DB anymore - fully private</li>
+                        <li>Nomago - SŽ is currently fully buying them out - public company (soon™)</li>
+                        <li>APMS - owned by private equity and publically traded - fully private</li>
+                    </ul>
+                </li>
+                <li>Two more operators for city buses owned by municipalities (Ljubljana and Maribor) - public</li>
+            </ul>
+        </section>
+        <section>
+            <img src="https://md.dragonsec.si/uploads/895a59d0-0d46-40cb-a147-d5df27de1878.svg" width="650px"/>
+            <ul>
+                <li>Slovenian payment technology company</li>
+                <li>
+                    Pioneered mobile payments in early 2000s with Moneta and Data-over-Voice<br/>
+                    <audio controls src="https://a.v0.si/dov.wav"></audio>
+                </li>
+                <li>Developed the Ljubljana city card</li>
+                <li>Weird political connections</li>
+                <li>Recently bought out by Enghouse</li>
+                <li>
+                    Also developed the ticketing systems for most Slovenian transport firms:
+                    <ul>
+                        <li>Nomago, Slovenian Railways, IJPP, Maribor</li>
+                        <li>
+                            All the same code underneath<br/>
+                            "We can just reuse the old project, right? Who cares about empty DB tables."
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h2>So, how does Slovenian Freedom of Information work?</h2>
+            <ul>
+                <li>Similar to the UK (Act on Access to Public Information)</li>
+                <li>Even companies performing services for the public (including private bus operators etc.) are
+                    subjects to it (as far as their public duties are concerned)
+                </li>
+                <li>Public registry of all subjects and legal basis for it (ajpes.si/RZIJZ)</li>
+                <li>Special provision on dynamic data and APIs (which is great for stuff like Transitious)</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Registry entry for SŽ - Passenger Transport</h2>
+            <img src="https://md.dragonsec.si/uploads/dfb490d0-d682-419c-9d53-58dddc49e09b.png" alt="">
+            <h4>Not just one, but <em>three</em> legal bases</h4>
+        </section>
+        <section>
+            <h2>You were here to talk about tickets!</h2>
+            <ul>
+                <li>Slovenian Railways tried to follow some standards at least</li>
+                <li>Tickets are <em>almost</em> Base64-encoded UIC SSBv2/v3 tickets,<br/>but not quite - not fixed
+                    length, at least signature is always the last 114 bytes
+                </li>
+                <li>They are basically only using the SSB as a header, unlike NS keycards</li>
+                <li>Uses proprietary type ID (21/22)</li>
+                <li>Standard is not published anywhere</li>
+                <li>How much can we reverse engineer, absent FoI?</li>
+            </ul>
+        </section>
+        <section>
+            <img src="https://md.dragonsec.si/uploads/15ae920f-7179-4bea-9450-1f77c147b247.png" alt="">
+        </section>
+        <section>
+            <h2>What we discovered</h2>
+            <ul>
+                <li>
+                    DateTime is same as in the IJPP standard (DateTime format invented by Margento)<br/>
+                    <img src="https://md.dragonsec.si/uploads/49463940-69a3-4d07-8eb7-1980ecff4763.png" alt="">
+                </li>
+                <li>They at least didn't use bit boundaries but full bytes<br/>- inside the SSB payload, which is not
+                    byte-aligned in the whole SSB)
+                </li>
+                <li>Instead of start, end and via stations, each path on the rail network is specified as a path with an
+                    ID, getting all of them is tedious and expensive
+                </li>
+                <li> We could reverse the rest of the enums with enough different tickets</li>
+            </ul>
+        </section>
+        <section>
+            <h2>The Freedom of Information Request</h2>
+            <h4>2024-01-05</h4>
+            <p>Requested a few bits:</p>
+            <ul>
+                <li>Barcode specification</li>
+                <li>All enums/databases needed during decoding for domestic travel</li>
+                <li>All enums/databases needed during decoding for international travel</li>
+                <li>Public keys used for signing domestic tickets</li>
+                <li>Public keys used for signing international tickets</li>
+            </ul>
+        </section>
+        <section>
+            <h2>The Handoff</h2>
+            <h4>2024-01-25</h4>
+            <ul>
+                <li>Barcode standard request handed off to DUJPP - which was just starting out at the time</li>
+                <li>
+                    DUJPP was clueless what FoI even is<br/>
+                    "To be honest, I don't quite understand your answer. You mention a complaint. Against whom? Why? Who
+                    is rejecting what?"
+                </li>
+                <li>In the end, we got DUJPP to hand the request back to SŽ (2025-04-16)</li>
+                <li>I also appealed to SŽ, that this is about their system and not IJPP (using the public tender
+                    number)
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h2>The Response</h2>
+            <h4>2024-02-01, 2024-02-05, 2024-02-12</h4>
+            <ul>
+                <li>Pointed at MERITS and UIC standards as well as the PKMW</li>
+                <li>PKMW does not have the key</li>
+                <li>MERITS costs money</li>
+                <li>Having to pay means it is not already available, so gimme</li>
+                <li>Later pointed at RailNetEurope CRD,<br/>which requires a RICS (thankfully already had one)</li>
+                <li>Given public key for international tickets after discovering it is not in PKMW,<br/>as well as
+                    assurance they will publish the key - which never happened
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h2>The Decision</h2>
+            <h4>2024-05-21</h4>
+            <ul>
+                <li>SŽ finally issued a decision denying access,<br/>to which I can file an appeal after the DUJPP
+                    U-turn
+                </li>
+                <li>Denied all other points of the request</li>
+            </ul>
+        </section>
+        <section>
+            <h4>Interference with the functioning or activities of the authority</h4>
+            <ul>
+                <li>I could create a "virtual sales point"???</li>
+                <li>LOLWAT, I didn't ask for the private key</li>
+                <li>Can hack into systems</li>
+                <li>Through a barcode? Wow, your developers sure are incompetent</li>
+            </ul>
+        </section>
+        <section>
+            <h4>Personal information</h4>
+            <ul>
+                <li>"Tickets contain personal information"</li>
+                <li>They confuse tickets and specifications, we don't want tickets</li>
+                <li>They don't (at least according to their privacy policy, and we know that doesn't
+                    lie)
+                </li>
+                <li>The only personal data in the spec is author names</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Slovenian FoI Exceptions</h2>
+            <p>We have a lot less exceptions than the UK:</p>
+            <ol>
+                <li>Classified information</li>
+                <li>Trade secrets</li>
+                <li>Personal data</li>
+                <li>Breaching statistical secrecy</li>
+                <li>Breach of the confidentiality of tax proceedings or tax secrecy</li>
+                <li>Obtained or compiled during a (current) criminal prosecution</li>
+                <li>Obtained or compiled during a (current) administrative proceeding</li>
+                <li>Obtained or compiled during a (current) judicial proceeding</li>
+                <li>Documents still being written that could be misunderstood</li>
+                <li>Protected information about cultural or natural values</li>
+                <li>Internal functioning of the authority</li>
+                <li>Information defined as protected by the InfoSec Authority</li>
+            </ol>
+        </section>
+        <section>
+            <h2>The Appeal</h2>
+            <h4>2024-06-05</h4>
+            <ul>
+                <li>We sent the appeal on June 5th</li>
+                <li>SŽ gave it to the ICO on June 20th</li>
+            </ul>
+            <br/>
+            <img src="https://md.dragonsec.si/uploads/2b2f83b8-078a-46f4-867e-9bc152fdbbae.png" alt="">
+            <br/>
+            (status on 2025-08-31)
+        </section>
+        <section>
+            <h2>Our Arguments</h2>
+            <ul>
+                <li>The fact that the system is not "made for public use" and "not open source" are moot and do not by definition specify internal procedures</li>
+                <li>"High potential damage" without any backing claims</li>
+                <li>What is a "Virtual Sales Point"????</li>
+                <li>"Public key" has "public" in the name</li>
+                <li>We are actually fighting ticket fraud with this</li>
+                <li>UIC stuff is public</li>
+                <li>You even gave us your public key for international tickets</li>
+                <li>Public key cannot contain personal details (not a certificate)</li>
+                <li>Printed tickets are not personalized, those are all chipcards, and have all the data also printed on them</li>
+                <li>The national equivalent standard is public, it just doesn't define paper barcodes</li>
+                <li>You transferred the copyright when you bought the software</li>
+            </ul>
+        </section>
+        <section>
+            <h2>The <em>in camera</em> Review</h2>
+            <h4>2024-07-11</h4>
+            <ul>
+                <li>IC send a note saying they will visit SŽ on the 17th</li>
+                <li>On the 16th, we receive another letter saying the viewing is cancelled</li>
+                <li>Apparently, people were on holiday</li>
+                <li>IC sends questions based from our appeal, mostly with direct quotes</li>
+                <li> Also asks what the specific documents are</li>
+            </ul>
+        </section>
+        <section>
+            <h2>The First Response</h2>
+            <h4>2024-08-08</h4>
+            <ul>
+                <li>"The ticketing system is actually a very big system"</li>
+                <li>"It is key to the functioning of the company"</li>
+                <li>The spec is an Excel file, the data is in CSVs, public key is a PEM file</li>
+                <li>We use DSA, but even creating a barcode with an invalid signature is hacking our systems</li>
+                <li>Our validators would let a fake ticket through if they don't have Internet</li>
+                <li>Barcodes don't contain data, but they can link them with payment methods etc.</li>
+                <li>We are responsible for IJPP</li>
+                <li>The source code contains patents</li>
+            </ul>
+        </section>
+        <section>
+            <h2>They also had opinions on the law itself</h2>
+            <blockquote style="font-size:.7em">
+                Finally, we would like to add that, in our opinion, the applicant's request exceeds the limits of
+                legally protected rights under the ZDIJZ in a way that jeopardizes or interferes with our rights.
+                [...] Disclosure of the requested data would jeopardise the performance of the listed  services or
+                the provision of the mandatory public service we perform, or could  lead to interference with our
+                system in the manner described above (establishment of a parallel  system). [...]
+                <b>If the requested information were disclosed, we would be forced to take preventive measures
+                    and additionally at least change our operational processes or otherwise secure our entire
+                    information system. The threat would be too great.</b> [...] In this case, it is a matter of abuse
+                of the right of access to public information. [...] We find it unacceptable and inadmissible that,
+                in order to comply with  the legal requirements of the ZDIJZ, applicants would gain access to
+                data/information that is essential for the very  functioning of our system and would thus be
+                forced to jeopardize our own operations. In our opinion, this was not the intention of the
+                legislator when adopting the law, nor is it the objective of the  law itself.
+            </blockquote>
+            Slovenian Railways, 2024<br/>
+            Machine translated with manual editing
+        </section>
+        <section>
+            <h2>Our Response</h2>
+            <h4>2024-08-22</h4>
+            <ul>
+                <li>Data format is not connected to your processes</li>
+                <li>DSA is standard - FIPS 186-5 "Public keys may be known by the public"</li>
+                <li>What's the difference between an unsigned barcode and some gibberish data??</li>
+                <li>Surely offline terminals check signatures ;)</li>
+                <li>They can't presume I will commit crimes</li>
+                <li>A public key has no copyright</li>
+                <li>The patent is not even about barcodes but NFC</li>
+                <li>We require transparency into a system that millions of taxpayer money paid for</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Differences from the UK</h2>
+            <h3>Prejudice to the prevention of crime</h3>
+            <ul>
+                <li>Unlike the UK, Slovenia doesn't have a specific exception for prejudice to prevent crime</li>
+                <li>We do have the exemption about interfering with internal operation</li>
+                <li>More meant against requesting stuff like speed camera schedules</li>
+                <li>We even made some case law about that a few years ago</li>
+                <li>Case was for vector design files of SŽ smartcards</li>
+                <li>They also claimed that printing on a blank PVC card would be fraud???</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Their Response</h2>
+            <h4>2024-09-06</h4>
+            <ul>
+                <li>Same BS as before</li>
+                <li>They say public key is eIDAS-defined - lolno, you are not a QTSP</li>
+                <li>They mention SHA1 collisions would be easier with a public key - wat???</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Our Last Response</h2>
+            <h4>2024-09-19</h4>
+            <ul>
+                <li>lol, you actually use SHA224 and not SHA1</li>
+                <li>We request an oral hearing,<br/>with possibility of a court-approved subject-matter expert</li>
+            </ul>
+        </section>
+        <section>
+            <h2>The Big Surprise</h2>
+            <h4>2024-09-24</h4>
+            <ul>
+                <li>IC wants to name a subject-matter expert in the case</li>
+                <li>The suggested SME is not a specialist in<br/>computer security but computer science</li>
+                <li>They want 1.200 EUR deposit</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Our Response</h2>
+            <h4>2024-09-25</h4>
+            <ul>
+                <li>We suggested another SME that was named for computer security specifically</li>
+                <li>Disputed the made up deposit amount</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Contacting the Subject-Matter Expert</h2>
+            <h4>2024-10-01</h4>
+            <ul>
+                <li>IC contacts the suggested SME and asks for price and explains the case</li>
+                <li>Estimated cost by SME is 1000 EUR</li>
+                <li>IC says that no oral hearing at least until after SME is done</li>
+                <li>We pay the deposit on 2024-10-16</li>
+            </ul>
+        </section>
+        <section>
+            <h2>SME work begins</h2>
+            <h4>2024-10-21</h4>
+            <ul>
+                <li>IC issues decision naming the SME</li>
+                <li>IC gives the SME questions they made up</li>
+                <li>At this point we realize we probably should've requested to see them beforehand</li>
+                <li>Gives the SME 2 months to produce a report</li>
+                <li>Yay, we might get it during congress</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Time Jump</h2>
+            <h4>2025-02-12</h4>
+            <ul>
+                <li>I was attending a court hearing about a different<br/>FoI request that a friend submitted against SŽ</li>
+                <li>While waiting meet the SŽ FoI person and ask about the case</li>
+                <li>Get told they invited DUJPP into the case,<br/>as well as that they finally arranged a date with the SME</li>
+                <li>Yes, at this point we are 2 months past the original due date</li>
+            </ul>
+        </section>
+        <section>
+            <h2>A Quick Detour</h2>
+            <h4>What court case?</h4>
+            <ul>
+                <li>It's a fun one</li>
+                <li>Friend went to do university mandatory practice at SŽ</li>
+                <li>Found that there is data we want as a JSON endpoint that would<br/>just require a one line change in the IIS config to allow public access on an already internet-exposed server</li>
+                <li>SŽ said no, it would be too expensive</li>
+                <li>ICO agreed</li>
+                <li>So we sued the ICO, and won</li>
+                <li>We are now waiting for them to also appoint an SME</li>
+            </ul>
+        </section>
+        <section>
+            <h2>The Additional Party</h2>
+            <h4>2025-03-11</h4>
+            <ul>
+                <li>We receive a notice from the IC that DUJPP wants to enter the case as a party with interest</li>
+                <li>They say the data is related to IJPP and the IJPP standard</li>
+                <li>We say they already figured out they are not involved in 2024</li>
+                <li>In the end, IC allows them to join the case</li>
+            </ul>
+        </section>
+        <section>
+            <h2>The Report</h2>
+            <h4>2025-05-28</h4>
+            <ul>
+                <li>We were attending the "Day of the passenger" conference with SŽ,<br/>DUJPP and other representatives sharing a room with us</li>
+                <li>I receive the report just as the talks start</li>
+                <li>The report is 2 pages long and doesn't specify any methodologies used</li>
+                <li>They didn't even read the Excel spreadsheet etc.</li>
+                <li>I request the non-confidential copies of the attachments</li>
+                <li>The IJPP standard is listed as a confidential attachment, surprising us all</li>
+                <li>I quickly submit an informal FoI request for the exact version<br/>of the IJPP standard used in the report to the Ministry</li>
+            </ul>
+        </section>
+        <section>
+            <img src="https://md.dragonsec.si/uploads/e1e4b7cf-6aa5-4870-ba99-82df2a6dc8ff.png" alt="" style="height: 800px">
+        </section>
+        <section>
+            <img src="https://md.dragonsec.si/uploads/230cf3f0-a3cd-4ecb-9472-b58edfab174d.png" alt="" style="height: 800px">
+        </section>
+        <section>
+            <img src="https://md.dragonsec.si/uploads/bbca07a0-659b-4720-8940-f5c42443e1a2.png" alt="" style="height: 800px">
+        </section>
+        <section>
+            <img src="https://md.dragonsec.si/uploads/5e527a02-bd74-43cf-a5bd-c8a620f7c531.png" alt="" style="height: 800px">
+        </section>
+        <section>
+            <h2>The Aftermath</h2>
+            <h4>2025-06-06</h4>
+            <ul>
+                <li>
+                    The ministry sends us a copy of the entire standard, where there is still not even the barcode specification<br/>
+                    This all happened in a few days, fastest FoI ever
+                </li>
+                <li>Did we just receive documents that were deemed by the SME to be confidential? lol</li>
+                <li>We write a very long response saying that all that the SME found is wrong</li>
+                <li>We CC the Ministry of Justice</li>
+                <li>The standard PDF was too big to send as an attachment, so we used the government equivalent of WeTransfer</li>
+                <li>Within 3 days we get about 10 downloads from SŽ and 20 from the MoJ</li>
+                <li>Looks like MoJ might not like SMEs doing this level of stupidity</li>
+                <li>We still haven't received anything official from them</li>
+            </ul>
+        </section>
+        <section>
+            <h2>A very funny discovery</h2>
+            <ul>
+                <li>Turns out, the international key also signs domestic tickets</li>
+                <li>We just wondered if it may be the same key and decided to try</li>
+                <li>Shows even more that they don't know what they are talking about</li>
+            </ul>
+        </section>
+        <section>
+            <img src="https://md.dragonsec.si/uploads/a71fe09a-6d84-45ca-b77e-53c7b2f2aac6.jpg" alt="" style="height: 800px">
+        </section>
+        <section>
+            <h2>The Questions</h2>
+            <h4>2025-07-18</h4>
+            <ul>
+                <li>IC forwards the SME our response to the report, requesting explanations</li>
+                <li>Due Date: 2025-08-08</li>
+                <li>Due Date of course not respected</li>
+                <li>Reminder sent 2025-08-18</li>
+                <li>SME said they had other cases, will be sent by end of week (2025-08-28)</li>
+                <li>Currently still waiting on response...</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Where to go from here?</h2>
+            <ul>
+                <li>
+                    We could probably request another SME to disprove this one;<br/>
+                    another 1000 EUR at least
+                </li>
+                <li>
+                    If a decision is rendered without an oral hearing, we can probably appeal to the administrative court
+                    <ul>
+                        <li>125 EUR filing fee, plus we need to write the appeal lawsuit</li>
+                        <li>We get all our court fees paid if we win</li>
+                        <li>We could request the court to make a final decision</li>
+                    </ul>
+                </li>
+                <li>If we get proven right, SŽ can also file an appeal to the court</li>
+            </ul>
+        </section>
+        <section>
+            <h2>What we learned?</h2>
+            <ul>
+                <li>Public bodies love making up reasons to not give you data</li>
+                <li>FoI procedures regarding technical standard might be long and tedious</li>
+                <li>Information Commissioners around Europe are not tech-savvy enough on their own to understand the requests</li>
+                <li>Subject-Matter Experts are expensive, but can be used as last resort</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Questions?</h2>
+            <div class="columns">
+                <div>
+                    <h2>Q</h2>
+
+                    Email: <a href="mailto:q@magicalcodewit.ch">q@magicalcodewit.ch</a><br/>
+                    Fedi: <a href="https://glauca.space/@q">@q@glauca.space</a>
+                </div>
+                <div>
+                    <h2>CraftByte</h2>
+
+                    Email: <a href="mailto:hello@craftbyte.net">hello@craftbyte.net</a><br/>
+                    Fedi: <a href="https://social.treehouse.system/@anze@">anze@treehouse.systems</a>
+                </div>
+            </div>
+            <p>
+                <img src="https://md.dragonsec.si/uploads/b11ae026-ad19-4c68-ad6c-caed5e0f1b87.png" width="300px"><br/>
+                <a href="https://zügli.app">zügli.app</a>
+            </p>
+            <p>
+                Slides at <a href="https://magicalcodewit.ch/mrmcd25-slides/">magicalcodewit.ch/mrmcd25-slides/</a>
+            </p>
+        </section>
+    </div>
+    <script src="/reveal-js/reveal.js"></script>
+    <script src="/reveal-js/notes/notes.js"></script>
+    <script src="/reveal-js/markdown/markdown.js"></script>
+    <script src="/reveal-js/highlight/highlight.js"></script>
+    <script src="/reveal-js/math/math.js"></script>
+    <script>
+        Reveal.initialize({
+            width: 1920,
+            height: 1080,
+            margin: 0.04,
+            hash: true,
+            plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX]
+        });
+
+        Reveal.addEventListener('slidechanged', function (event) {
+            if (event.currentSlide.getAttribute('data-theme') === 'nse') {
+                document.getElementById('reveal').classList.add('nse');
+            } else {
+                document.getElementById('reveal').classList.remove('nse');
+            }
+        })
+    </script>
+</div>
+</body>
+</html>

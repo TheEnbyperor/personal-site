@@ -1,0 +1,335 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Secure Digital Ticketing &mdash; Lessons from the Deutschlandticket</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/reveal-js/reset.css">
+    <link rel="stylesheet" href="/reveal-js/reveal.css">
+    <link rel="stylesheet" href="/reveal-js/theme/white.css">
+    <link rel="stylesheet" href="/reveal-js/highlight/monokai.css">
+    <link rel="stylesheet" href="/slides-personal.css">
+</head>
+<body id="reveal">
+<div class="reveal">
+    <div class="slides" style="text-align: left">
+        <section>
+            <div class="columns" style="grid-template-columns: 1fr 2fr">
+                <div>
+                    <img src="alle-reden-von-der-sicherheit.png" alt="">
+                </div>
+                <div>
+                    <h1>Secure Digital Ticketing</h1>
+                    <h2>Lessons from the Deutschlandticket</h2>
+                    <h3>Q Misell</h3>
+                    <p>8<sup>th</sup> Charter of Trust Meetup Germany</p>
+                    <p>18<sup>th</sup> of March 2026</p>
+                </div>
+            </div>
+        </section>
+        <section>
+            <h1>A spherical ticket<br/>in a vacuum</h1>
+            <h2>The ideals</h2>
+            <ul>
+                <li>Customers can buy tickets easily</li>
+                <li>Transport companies are fairly compensated for their services</li>
+                <li>Ticket control simple and effective</li>
+                <li><b>Fraudsters excluded</b></li>
+            </ul>
+        </section>
+        <section>
+            <h2>How can one defraud the system?</h2>
+            <ul>
+                <li>
+                    Payments fraud
+                    <ul>
+                        <li>Relatively low-skill</li>
+                        <li>Low resources needed</li>
+                    </ul>
+                </li>
+                <li>
+                    Cryptographic fraud
+                    <ul>
+                        <li>Harder to execute</li>
+                        <li>Much more skill required</li>
+                        <li>Harder to detect</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h1>Payments Fraud</h1>
+            <h2>A case study</h2>
+        </section>
+        <section>
+            <h2>D-Tickets over Telegram</h2>
+            <div class="columns" style="grid-template-columns: 1fr 1fr">
+                <div>
+                    <ul>
+                        <li>Paying via PayPal Friends & Family</li>
+                        <li>Received a PDF of a screenshot of Apple Wallet</li>
+                        <li>Surely this is totally legit?</li>
+                    </ul>
+                </div>
+                <div>
+                    <img src="../39c3-slides/c9979de0-8f22-47dc-998c-299503666b74.png" alt="" style="width: 400px">
+                </div>
+            </div>
+        </section>
+        <section>
+            <h2>But did it actually work?</h2>
+            <p>Yes! We got a legitimate ticket for 15EUR.</p>
+            <img src="../39c3-slides/5f1c1562-978a-4549-addb-04e97f54e9b0.png" alt="" style="width: 1250px">
+        </section>
+        <section>
+            <h1>How?!</h1>
+        </section>
+        <section>
+            <blockquote style="margin: 20px 0">
+                <p>
+                    People provided fake payment information, which is not verified at the time of the preview -
+                    the ticket is invalid when scanned on the train, because there are also cancellation data available
+                    - but this only applies to the DB. Elsewhere, one might probably get through with such a ticket.
+                </p>
+            </blockquote>
+            <small>Stadtwerke Schweinfurt</small>
+        </section>
+        <section>
+            <h2>Exlpain?</h2>
+            <ol>
+                <li>Order placed by the scammers with a fake bank account</li>
+                <li>Stadtwerke doesn't verify the account - they can't</li>
+                <li>Ticket issued immediately - people are impatient on orders</li>
+                <li>Maybe, the ticket is cancelled it later</li>
+                <li>Only the DB checks the cancellation list (at the time)</li>
+            </ol>
+        </section>
+        <section>
+            <h2>SEPA Direct-Debit</h2>
+            <h3>An unfortunate vehicle for fraud</h3>
+            <ul>
+                <li>Not your traditional online card payment</li>
+                <li>Does not require account holder authorization, just an IBAN</li>
+                <li>A valid <em>seeming</em> but fake IBAN is hard to detect</li>
+                <li>Processing anything takes multiple days</li>
+            </ul>
+        </section>
+        <section>
+            <h2>What even is a mandate, anyway?</h2>
+            <blockquote style="margin: 20px 0">
+                <p>
+                    The SEPA Regulation does not specify how a mandate should be signed by the payer.
+                </p>
+            </blockquote>
+            <small>Letter EPC098-13, European Payments Council</small>
+        </section>
+        <section>
+            <h2>"Why can't the issuer just revoke these tickets?"</h2>
+            <p>In the highly distributed world of German public transport,<br/>communicating revocation can be
+                difficult.</p>
+            <p>Issuers can have more success simply removing access in their own app.</p>
+        </section>
+        <section>
+            <h2>On revocation</h2>
+            <ul>
+                <li>Two systems exist for issuing the D-Ticket: VDV-KA and UIC</li>
+                <li>The VDV-KA has their KA-Sperrlistenmanagementsystem (KOSES)</li>
+                <li>The UIC has their electronic Ticket Control Database (eTCD)</li>
+                <li>eTCD only for international traffic</li>
+                <li>No equivalent national system (yet) for UIC tickets</li>
+            </ul>
+        </section>
+        <section>
+            <h1>Cryptographic Fraud</h1>
+            <h2>A case study</h2>
+        </section>
+        <section>
+            <blockquote style="margin: 20px 0">
+                <p>There are apparantly de-ticket scams going arround that issue u tickets that are signed with the
+                    wrong key.</p>
+                <p>It uses keys from Vetter GmbH Omnibus- und Mietwagenbetrieb.</p>
+            </blockquote>
+            <small>A Signal message from a friend</small>
+        </section>
+        <section>
+            <h2>So far, so normal</h2>
+            <img src="../39c3-slides/a2a1d64f-a876-4288-b5ac-4d8db30417d4.png" alt="" style="width: 1250px">
+        </section>
+        <section>
+            <h2>Wait, no, that's not right</h2>
+            <p>Senior? Unknown zone?? DB Regio???</p>
+            <div class="columns">
+                <img src="../39c3-slides/067531f1-4e42-4594-af35-d42f5cc7e56e.png" alt="">
+                <img src="../39c3-slides/35a6fac1-42f2-4789-a584-01b70fe12e4b.png" alt="">
+                <img src="../39c3-slides/da124aae-d5c7-4961-87b6-81f69207b514.png" alt="">
+            </div>
+        </section>
+        <section>
+            <h2><code>d-ticket.su</code></h2>
+            <img src="../39c3-slides/f12a9978-b6ad-41f9-a9b6-4b71de5bbaad.png" alt="" style="width: 1000px">
+        </section>
+        <section>
+            <h2>What, exactly, happened here?</h2>
+            <ul>
+                <li>We cannot say conclusively (yet)</li>
+                <li>These tickets don't have the hallmarks of payment fraud</li>
+                <li>They're issued in ways Vetter never did</li>
+                <li>There are careless mistakes in issuance</li>
+                <li><b>Ergo: the private signing key was illictly aquired</b></li>
+            </ul>
+        </section>
+        <section>
+            <h2>Stealing a UIC private key</h2>
+            <div class="columns">
+                <div>
+                    <h3>Option 1</h3>
+                    <ul>
+                        <li>UIC D-Tickets are signed<br/>with DSA-1024 and SHA-1</li>
+                        <li>Nonce re-use? Leaked key</li>
+                        <li>Poor random number generator?<br/>Leaked key</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Option 2</h3>
+                    <p>Wrench</p>
+                    <img src="../39c3-slides/security.png" alt="" style="width: 600px">
+                </div>
+            </div>
+            <div class="columns">
+                <div>
+                    <h3>Option 3</h3>
+                    <p>Dealings under the table</p>
+                </div>
+                <div>
+                    <h3>Option 4</h3>
+                    <ul>
+                        <li>Plain old stupidy</li>
+                        <li>Key left exposed somewhere</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section>
+            <blockquote style="margin: 20px 0">
+                <p>Please also note that the key 521100001.pem was withdrawn at short notice due to suspected
+                    misuse.</p>
+            </blockquote>
+            <small>Deutschlandtarifverbund, 1<sup>st</sup> February 2025</small>
+        </section>
+        <section>
+            <h2>This took a while</h2>
+            <ul>
+                <li>Initial suspicions raised around September/October 2024</li>
+                <li>Pretty confident on what was going on by the end of November</li>
+                <li>Key revoked early February</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Why did revocation take so long?</h2>
+            <blockquote style="margin: 20px 0">
+                <p>
+                    Ein Sperren des Ticketschlüssels noch im Dezember 2024 wurde aufgrund von Urlaub und Krankheit
+                    des verantwortlichen Mitarbeiters nicht durchgeführt.
+                    Ein Back-up für diese Fälle existiert bei der DTVG aufgrund enger Personaldecke nicht.
+                </p>
+            </blockquote>
+            <small>Deutschlandtarifverbund</small>
+        </section>
+        <section>
+            <h1>The Lessons</h1>
+        </section>
+        <section>
+            <h2>On Payment</h2>
+            <ul>
+                <li>Withhold issuance until payment is confirmed</li>
+                <li>
+                    Utilise the systems available to secure payments
+                    <ul>
+                        <li>3D Secure</li>
+                        <li>Confirmation of Payee (CoP)</li>
+                    </ul>
+                </li>
+                <li>Effective revocation of issued tickets</li>
+            </ul>
+        </section>
+        <section>
+            <h2>On Cryptography</h2>
+            <ul>
+                <li>Establish rules for private key handling</li>
+                <li>Move away from dated cryptography, like DSA-1024</li>
+                <li>Ideally, audited storage on HSMs</li>
+                <li>Penalties and sanctions for making mistakes</li>
+                <li>Validation applications need to be strict<br/>about standards conformance and signatures</li>
+            </ul>
+        </section>
+        <section>
+            <h3>Deutschlandtarifverbund Blocklist</h3>
+            <ul>
+                <li>The DTVG has started the rollout of a blocklist for UIC tickets</li>
+                <li>Adoption is increasing well, but it is not yet universal</li>
+                <li>
+                    mo.pla/Vetter decided not to play along
+                    <ul>
+                        <li>They have established a private revocation system</li>
+                        <li>Requiring more integration work from everyone checking their tickets</li>
+                        <li>Further fragmenting an already messy ecosystem</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h1>PKI</h1>
+            <p>It's a <em>really</em> hard problem,<br/>and you better be sure you've got it right.</p>
+        </section>
+        <section>
+            <h2>The bigger picture</h2>
+            <h3>How do we stop similar mistakes happening<br/>in future digital projects?</h3>
+            <ul>
+                <li>Maintain a team of experts on hand, don't hire anew for every project</li>
+                <li>Collaborate with those who've come before,<br/>"Not Invented Here" leads to repeating mistakes</li>
+                <li>Consult with nerds, not just management consultants</li>
+                <li>Ensure that institutional knowledge is kept</li>
+            </ul>
+        </section>
+        <section>
+            <blockquote style="margin: 20px 0">
+                <p>It appears that there are currently few colleagues within the GVB who are familiar with this specific process &mdash; the knowledge may no longer be present.</p>
+            </blockquote>
+            <small>GVB - Amsterdam Municipality Transportation Company</small>
+        </section>
+        <section>
+            <h1>Question time!</h1>
+            <p>
+                Email: qmisell@mpi-inf.mpg.de<br/>
+                Fedi: @q@glauca.space
+            </p>
+            <p>
+                Slides at <a href="https://magicalcodewit.ch/cot8-slides/">magicalcodewit.ch/cot8-slides/</a>
+            </p>
+        </section>
+    </div>
+</div>
+<script src="/reveal-js/reveal.js"></script>
+<script src="/reveal-js/notes/notes.js"></script>
+<script src="/reveal-js/markdown/markdown.js"></script>
+<script src="/reveal-js/highlight/highlight.js"></script>
+<script src="/reveal-js/math/math.js"></script>
+<script>
+    Reveal.initialize({
+        width: 1920,
+        height: 1080,
+        margin: 0.04,
+        hash: true,
+        transition: "fade",
+        plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX]
+    });
+</script>
+</body>
+</html>

